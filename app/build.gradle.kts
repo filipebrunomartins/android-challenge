@@ -1,26 +1,24 @@
 plugins {
-    id("com.android.application")
-    id("org.jetbrains.kotlin.android")
-    id("org.jetbrains.kotlin.plugin.compose")
+    alias(libs.plugins.movieflux.android.application)
+    alias(libs.plugins.movieflux.android.application.compose)
+    alias(libs.plugins.movieflux.android.application.jacoco)
+    alias(libs.plugins.movieflux.hilt)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
     namespace = "com.challenge.movieflux"
-    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.challenge.movieflux"
-        minSdk = 24
-        targetSdk = 36
         versionCode = 1
-        versionName = "1.0"
+        versionName = "1.0.0" // X.Y.Z; X = Major, Y = minor, Z = Patch level
 
+        // Todo
+        // Custom test runner to set up Hilt dependency graph
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
-    buildFeatures {
-        compose = true
-    }
 
     buildTypes {
         release {
@@ -31,34 +29,45 @@ android {
             )
         }
     }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
-    kotlinOptions {
-        jvmTarget = "17"
+
+    packaging {
+        resources {
+            excludes.add("/META-INF/{AL2.0,LGPL2.1}")
+        }
     }
 }
 
 dependencies {
-    implementation("androidx.core:core-ktx:1.18.0")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.9.0")
-    implementation("androidx.activity:activity-compose:1.10.1")
-    implementation("com.google.android.material:material:1.13.0")
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.navigation3.ui)
+    implementation(libs.androidx.compose.material3.adaptive)
+    implementation(libs.androidx.compose.material3.adaptive.layout)
+    implementation(libs.androidx.compose.material3.adaptive.navigation)
+    implementation(libs.androidx.compose.material3.adaptive.navigation3)
+    implementation(libs.androidx.compose.material3.windowSizeClass)
+    implementation(libs.androidx.compose.runtime.tracing)
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.lifecycle.runtimeCompose)
+    implementation(libs.androidx.lifecycle.viewModel.navigation3)
+    implementation(libs.androidx.tracing.ktx)
+    implementation(libs.kotlinx.coroutines.guava)
+    implementation(libs.coil.kt)
+    implementation(libs.kotlinx.serialization.json)
 
-    val composeBom = platform("androidx.compose:compose-bom:2025.04.01")
+    ksp(libs.hilt.compiler)
 
-    implementation(composeBom)
-    androidTestImplementation(composeBom)
+    debugImplementation(libs.androidx.compose.ui.testManifest)
 
-    implementation("androidx.compose.ui:ui")
-    implementation("androidx.compose.ui:ui-tooling-preview")
-    implementation("androidx.compose.material3:material3")
+    kspTest(libs.hilt.compiler)
 
-    testImplementation("junit:junit:4.13.2")
+    testImplementation(libs.hilt.android.testing)
+    testImplementation(libs.kotlin.test)
 
-    androidTestImplementation("androidx.test.ext:junit:1.2.1")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
 
-    debugImplementation("androidx.compose.ui:ui-tooling")
+    androidTestImplementation(libs.androidx.test.espresso.core)
+    androidTestImplementation(libs.androidx.compose.ui.test)
+    androidTestImplementation(libs.hilt.android.testing)
+    androidTestImplementation(libs.kotlin.test)
+
 }

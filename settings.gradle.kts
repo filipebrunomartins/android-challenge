@@ -1,4 +1,5 @@
 pluginManagement {
+    includeBuild("build-logic")
     repositories {
         google()
         mavenCentral()
@@ -17,4 +18,5 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "MovieFlux"
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 include(":app")
