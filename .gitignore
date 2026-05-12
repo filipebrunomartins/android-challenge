@@ -1,0 +1,48 @@
+# IntelliJ / Android Studio
+*.iml
+.idea/
+.vscode/
+
+# Local config
+local.properties
+.DS_Store
+
+# Gradle
+.gradle/
+build/
+*/build/
+
+# Android build outputs
+*.apk
+*.aar
+*.aab
+*.ap_
+*.dex
+
+# Java / Kotlin
+*.class
+out/
+
+# Native builds
+.externalNativeBuild/
+.cxx/
+
+# Captures / logs
+captures/
+*.log
+
+# Generated folders
+bin/
+gen/
+
+# Navigation editor
+.navigation/
+
+# Proguard
+proguard/
+
+# Lint
+lint/intermediates/
+lint/generated/
+lint/outputs/
+lint/tmp/
