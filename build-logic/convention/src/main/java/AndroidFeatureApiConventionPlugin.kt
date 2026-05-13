@@ -10,7 +10,7 @@ class AndroidFeatureApiConventionPlugin : Plugin<Project> {
             apply(plugin = "org.jetbrains.kotlin.plugin.serialization")
 
             dependencies {
-//                "api"(project(":core:navigation"))
+                "api"(project(":core:navigation"))
             }
         }
     }

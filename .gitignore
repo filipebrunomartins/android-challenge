@@ -22,6 +22,7 @@ build/
 # Java / Kotlin
 *.class
 out/
+.kotlin/
 
 # Native builds
 .externalNativeBuild/

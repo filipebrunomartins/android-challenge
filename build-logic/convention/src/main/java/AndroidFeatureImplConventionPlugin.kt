@@ -20,12 +20,11 @@ class AndroidFeatureImplConventionPlugin : Plugin<Project> {
 
             dependencies {
 //                "implementation"(project(":core:ui"))
-//                "implementation"(project(":core:designsystem"))
+                "implementation"(project(":core:designsystem"))
 
                 "implementation"(libs.findLibrary("androidx.lifecycle.runtimeCompose").get())
                 "implementation"(libs.findLibrary("androidx.lifecycle.viewModelCompose").get())
                 "implementation"(libs.findLibrary("androidx.hilt.lifecycle.viewModelCompose").get())
-                "implementation"(libs.findLibrary("androidx.navigation3.runtime").get())
                 "implementation"(libs.findLibrary("androidx.tracing.ktx").get())
 
                 "androidTestImplementation"(
