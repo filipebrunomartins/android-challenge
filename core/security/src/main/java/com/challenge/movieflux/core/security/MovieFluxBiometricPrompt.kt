@@ -1,12 +1,14 @@
 package com.challenge.movieflux.core.security
 
+import androidx.biometric.AuthenticationRequest
 import androidx.biometric.AuthenticationResult
 import androidx.biometric.AuthenticationResultCallback
 import androidx.biometric.compose.rememberAuthenticationLauncher
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import androidx.biometric.AuthenticationRequest
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 
 @Composable
 fun MovieFluxBiometricPrompt(
@@ -16,26 +18,32 @@ fun MovieFluxBiometricPrompt(
     onFailed: () -> Unit = {}
 ) {
 
-    val authCallback = object : AuthenticationResultCallback {
+    val currentOnSuccess by rememberUpdatedState(onSuccess)
+    val currentOnError by rememberUpdatedState(onError)
+    val currentOnFailed by rememberUpdatedState(onFailed)
 
-        override fun onAuthResult(
-            result: AuthenticationResult
-        ) {
+    val authCallback = remember {
+        object : AuthenticationResultCallback {
 
-            when (result) {
+            override fun onAuthResult(
+                result: AuthenticationResult
+            ) {
 
-                is AuthenticationResult.Success -> {
-                    onSuccess()
-                }
+                when (result) {
 
-                is AuthenticationResult.Error -> {
-                    onError(result.errString.toString())
+                    is AuthenticationResult.Success -> {
+                        currentOnSuccess()
+                    }
+
+                    is AuthenticationResult.Error -> {
+                        currentOnError(result.errString.toString())
+                    }
                 }
             }
-        }
 
-        override fun onAuthAttemptFailed() {
-            onFailed()
+            override fun onAuthAttemptFailed() {
+                currentOnFailed()
+            }
         }
     }
 
@@ -56,7 +64,7 @@ fun MovieFluxBiometricPrompt(
             .build()
     }
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(triggerAuthentication) {
 
         if (triggerAuthentication) {
             authLauncher.launch(authRequest)

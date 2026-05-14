@@ -33,9 +33,6 @@ fun LoginScreen(
 
     val context = LocalContext.current
 
-    val activity = LocalContext.current as FragmentActivity
-
-
     when (uiState) {
         is LoginUiState.Loading -> {
             Box(

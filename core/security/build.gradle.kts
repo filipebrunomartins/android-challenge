@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.movieflux.android.library)
+    alias(libs.plugins.movieflux.android.library.compose)
     alias(libs.plugins.movieflux.hilt)
     id("kotlinx-serialization")
 }

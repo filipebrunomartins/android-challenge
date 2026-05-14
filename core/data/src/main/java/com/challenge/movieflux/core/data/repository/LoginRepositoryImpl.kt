@@ -19,15 +19,16 @@ class LoginRepositoryImpl @Inject constructor(
     }
 
     override fun saveSession(username: String) {
-        securePrefs.saveUser(username, "1234")
+        securePrefs.saveSession(username)
     }
 
     override fun clearSession() {
-        securePrefs.saveUser("", "")
+        //Todo refazer
+        securePrefs.saveSession("")
     }
 
     override fun isLoggedIn(): Boolean {
-        return securePrefs.getUser().isNullOrBlank().not()
+        return securePrefs.getSessionUser().isNullOrBlank().not()
     }
 
     override fun setBiometricEnabled(enabled: Boolean) {
