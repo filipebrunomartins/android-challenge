@@ -24,7 +24,7 @@ class LoginViewModel @Inject constructor(
     val uiState: StateFlow<LoginUiState> = _uiState
 
     init {
-        checkInitialState()
+        //checkInitialState()
     }
 
     private fun checkInitialState() {
