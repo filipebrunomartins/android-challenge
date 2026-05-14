@@ -40,11 +40,15 @@ android {
 dependencies {
     implementation(projects.feature.home)
     implementation(projects.feature.login)
+    implementation(projects.feature.profile)
+    implementation(projects.feature.favorites)
 
     implementation(projects.core.designsystem)
     implementation(projects.core.common)
     implementation(projects.core.data)
     implementation(projects.core.security)
+    //por hora aqui
+    implementation(projects.core.network)
 
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.material3)

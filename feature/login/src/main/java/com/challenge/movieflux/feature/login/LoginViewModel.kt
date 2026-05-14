@@ -20,23 +20,28 @@ class LoginViewModel @Inject constructor(
     private val enableBiometricUseCase: EnableBiometricUseCase
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow<LoginUiState>(LoginUiState.Loading)
+    private val _uiState = MutableStateFlow<LoginUiState>(LoginUiState.Initial)
     val uiState: StateFlow<LoginUiState> = _uiState
 
     init {
-        //checkInitialState()
+        checkInitialState()
     }
 
     private fun checkInitialState() {
         viewModelScope.launch {
             _uiState.value = LoginUiState.Loading
 
-            val biometricEnabled = isBiometricEnabledUseCase()
+            val sessionActive = checkSessionUseCase()
+            if (sessionActive) {
+                _uiState.value = LoginUiState.LoggedIn
+                return@launch
+            }
 
+            val biometricEnabled = isBiometricEnabledUseCase()
             _uiState.value = if (biometricEnabled) {
-                LoginUiState.NeedBiometric
+                LoginUiState.BiometricPrompt
             } else {
-                LoginUiState.LoggedIn
+                LoginUiState.Initial
             }
         }
     }
@@ -63,28 +68,30 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    fun ignoreBiometric() {
-        _uiState.value = LoginUiState.LoggedIn
-    }
-
-    // -------------------------
-    // ENABLE BIOMETRIC AFTER FIRST LOGIN
-    // -------------------------
-    fun enableBiometric() {
+    private fun enableBiometric() {
         viewModelScope.launch {
             enableBiometricUseCase()
             _uiState.value = LoginUiState.LoggedIn
         }
     }
 
-    // -------------------------
-    // CALLBACK DO BIOMETRIC PROMPT
-    // -------------------------
-    fun onBiometricSuccess() {
+    fun askBiometricConfirm() {
+        _uiState.value = LoginUiState.BiometricPrompt
+    }
+
+    fun askBiometricNotNow() {
         _uiState.value = LoginUiState.LoggedIn
+    }
+
+    fun onBiometricSuccess() {
+        enableBiometric()
     }
 
     fun onBiometricFailed() {
         _uiState.value = LoginUiState.Error("Falha na biometria")
+    }
+
+    fun clearError() {
+        _uiState.value = LoginUiState.Initial
     }
 }

@@ -5,9 +5,11 @@ sealed interface LoginUiState {
 
     data object Loading : LoginUiState
 
-    data object NeedBiometric : LoginUiState
+    data object Initial : LoginUiState
 
     data object AskToEnableBiometric : LoginUiState
+
+    data object BiometricPrompt : LoginUiState
 
     data object LoggedIn : LoginUiState
 

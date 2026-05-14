@@ -5,8 +5,9 @@ import com.challenge.movieflux.feature.login.LoginScreen
 
 @Composable
 internal fun LoginScreenRoute(
-    onLoginSuccess: () -> Unit,
-    onBackBtnClick: () -> Unit
+    onLoginSuccess: () -> Unit
 ) {
-    LoginScreen()
+    LoginScreen(
+        onLoginSuccess = onLoginSuccess
+    )
 }

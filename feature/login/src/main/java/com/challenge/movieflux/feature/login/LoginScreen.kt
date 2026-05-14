@@ -1,123 +1,131 @@
 package com.challenge.movieflux.feature.login
 
 import android.widget.Toast
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import com.challenge.movieflux.core.designsystem.component.MovieFluxButton
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.fragment.app.FragmentActivity
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.challenge.movieflux.core.designsystem.component.MovieFluxButton
 import com.challenge.movieflux.core.security.MovieFluxBiometricPrompt
 
 @Composable
 fun LoginScreen(
-    viewModel: LoginViewModel = hiltViewModel()
+    viewModel: LoginViewModel = hiltViewModel(),
+    onLoginSuccess: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val context = LocalContext.current
 
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
-    val context = LocalContext.current
-
-    when (uiState) {
-        is LoginUiState.Loading -> {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator()
+    LaunchedEffect(uiState) {
+        when (uiState) {
+            is LoginUiState.LoggedIn -> {
+                onLoginSuccess()
             }
-        }
-
-        is LoginUiState.Error -> {
-            Toast.makeText(
-                context,
-                (uiState as LoginUiState.Error).message,
-                Toast.LENGTH_SHORT
-            ).show()
-        }
-
-        is LoginUiState.AskToEnableBiometric -> {
-            MovieFluxBiometricPrompt(
-                triggerAuthentication = true,
-                onSuccess = {
-                    viewModel.onBiometricSuccess()
-                },
-
-                onError = { error ->
-                    viewModel.onBiometricFailed()
-                },
-
-                onFailed = {
-                    // tentativa inválida (dedo errado por exemplo)
-                }
-            )
-        }
-
-        is LoginUiState.NeedBiometric -> {
-        }
-
-        is LoginUiState.LoggedIn -> {
-            Toast.makeText(context, "Logou", Toast.LENGTH_SHORT).show()
+            is LoginUiState.Error -> {
+                Toast.makeText(context, (uiState as LoginUiState.Error).message, Toast.LENGTH_SHORT).show()
+                viewModel.clearError()
+            }
+            else -> {}
         }
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.Center
-    ) {
-
-        Text(
-            text = "Login",
-            style = MaterialTheme.typography.headlineMedium
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // USER
-        OutlinedTextField(
-            value = username,
-            onValueChange = { username = it },
-            label = { Text("Usuário") },
-            singleLine = true,
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        // PASSWORD
-        OutlinedTextField(
-            value = password,
-            onValueChange = { password = it },
-            label = { Text("Senha") },
-            singleLine = true,
-            visualTransformation = PasswordVisualTransformation(),
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        MovieFluxButton(
-            onClick = { viewModel.login(username,password) },
-            modifier = Modifier.fillMaxWidth()
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.Center
         ) {
-            Text("Entrar")
+            Text(
+                text = "Login",
+                style = MaterialTheme.typography.headlineMedium
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            OutlinedTextField(
+                value = username,
+                onValueChange = { username = it },
+                label = { Text("Usuário") },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth(),
+                enabled = uiState !is LoginUiState.Loading
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            OutlinedTextField(
+                value = password,
+                onValueChange = { password = it },
+                label = { Text("Senha") },
+                singleLine = true,
+                visualTransformation = PasswordVisualTransformation(),
+                modifier = Modifier.fillMaxWidth(),
+                enabled = uiState !is LoginUiState.Loading
+            )
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            MovieFluxButton(
+                onClick = { viewModel.login(username, password) },
+                modifier = Modifier.fillMaxWidth(),
+                enabled = uiState !is LoginUiState.Loading
+            ) {
+                Text("Entrar")
+            }
+        }
+        when (uiState) {
+            is LoginUiState.Loading -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clickable(enabled = false) { }
+                        .background(Color.Black.copy(alpha = 0.12f)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+            }
+
+            is LoginUiState.AskToEnableBiometric -> {
+                AlertDialog(
+                    onDismissRequest = { viewModel.askBiometricNotNow() },
+                    title = { Text("Ativar biometria") },
+                    text = { Text("Deseja usar biometria nos próximos acessos?") },
+                    confirmButton = {
+                        TextButton(onClick = { viewModel.askBiometricConfirm() }) {
+                            Text("Ativar")
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { viewModel.askBiometricNotNow() }) {
+                            Text("Agora não")
+                        }
+                    }
+                )
+            }
+
+            is LoginUiState.BiometricPrompt -> {
+                MovieFluxBiometricPrompt(
+                    triggerAuthentication = true,
+                    onSuccess = { viewModel.onBiometricSuccess() },
+                    onError = { viewModel.onBiometricFailed() },
+                    onFailed = { }
+                )
+            }
+            else -> {}
         }
     }
 }

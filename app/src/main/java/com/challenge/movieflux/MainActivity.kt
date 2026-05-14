@@ -4,7 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import com.challenge.movieflux.core.designsystem.theme.MovieFluxTheme
-import com.challenge.movieflux.navigation.MovieFluxNavHost
+import com.challenge.movieflux.ui.MovieFluxApp
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -15,7 +15,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             MovieFluxTheme {
-                MovieFluxNavHost()
+                MovieFluxApp()
             }
         }
     }
