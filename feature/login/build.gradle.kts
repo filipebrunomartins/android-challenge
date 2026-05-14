@@ -11,6 +11,7 @@ android {
 
 dependencies {
     implementation(projects.core.domain)
+    implementation(projects.core.security)
 
     androidTestImplementation(libs.bundles.androidx.compose.ui.test)
     implementation(libs.androidx.navigation.compose)

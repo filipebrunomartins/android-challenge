@@ -27,19 +27,9 @@ class LoginViewModel @Inject constructor(
         checkInitialState()
     }
 
-    // -------------------------
-    // INIT FLOW (entrada app)
-    // -------------------------
     private fun checkInitialState() {
         viewModelScope.launch {
             _uiState.value = LoginUiState.Loading
-
-            val isLogged = checkSessionUseCase()
-
-            if (!isLogged) {
-                _uiState.value = LoginUiState.LoggedOut
-                return@launch
-            }
 
             val biometricEnabled = isBiometricEnabledUseCase()
 
@@ -51,9 +41,6 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    // -------------------------
-    // LOGIN ACTION
-    // -------------------------
     fun login(username: String, password: String) {
         viewModelScope.launch {
 
@@ -66,15 +53,18 @@ class LoginViewModel @Inject constructor(
                 return@launch
             }
 
-            // login ok → perguntar biometria ou ir direto
             val biometricEnabled = isBiometricEnabledUseCase()
 
             _uiState.value = if (biometricEnabled) {
                 LoginUiState.LoggedIn
             } else {
-                LoginUiState.LoggedIn
+                LoginUiState.AskToEnableBiometric
             }
         }
+    }
+
+    fun ignoreBiometric() {
+        _uiState.value = LoginUiState.LoggedIn
     }
 
     // -------------------------

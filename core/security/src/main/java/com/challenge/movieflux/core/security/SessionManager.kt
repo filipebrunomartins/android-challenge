@@ -1,23 +1,44 @@
 package com.challenge.movieflux.core.security
 
-class SessionManager(
+import javax.inject.Inject
+
+class SessionManager @Inject constructor(
     private val securePrefs: SecurePrefs
 ) {
 
-    fun isLoggedIn(username: String, password: String): Boolean {
-        return securePrefs.getUser() == username &&
-                securePrefs.getPassword() == password
+    fun login(
+        username: String,
+        password: String
+    ): Boolean {
+
+        val success =
+            username == "admin" &&
+                    password == "1234"
+
+        if (success) {
+            securePrefs.saveSession(username)
+        }
+
+        return success
     }
 
-    fun createSession(username: String, password: String) {
-        securePrefs.saveUser(username, password)
+    fun logout() {
+        securePrefs.clearSession()
     }
 
-    fun isBiometricEnabled(): Boolean {
-        return securePrefs.isBiometricEnabled()
+    fun isLoggedIn(): Boolean {
+        return securePrefs.isLoggedIn()
     }
 
     fun enableBiometric() {
         securePrefs.setBiometricEnabled(true)
+    }
+
+    fun disableBiometric() {
+        securePrefs.setBiometricEnabled(false)
+    }
+
+    fun isBiometricEnabled(): Boolean {
+        return securePrefs.isBiometricEnabled()
     }
 }

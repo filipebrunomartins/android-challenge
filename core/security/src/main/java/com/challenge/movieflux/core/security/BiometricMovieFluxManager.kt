@@ -7,10 +7,15 @@ class BiometricMovieFluxManager(
 ) {
 
     fun canAuthenticate(): Boolean {
-        val manager = androidx.biometric.BiometricManager.from(context)
 
-        return manager.canAuthenticate(
+        val biometricManager =
+            androidx.biometric.BiometricManager.from(context)
+
+        val result = biometricManager.canAuthenticate(
             androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG
-        ) == androidx.biometric.BiometricManager.BIOMETRIC_SUCCESS
+        )
+
+        return result ==
+                androidx.biometric.BiometricManager.BIOMETRIC_SUCCESS
     }
 }

@@ -8,6 +8,8 @@ import com.challenge.movieflux.core.navigation.MovieFluxRoutes
 import com.challenge.movieflux.feature.home.navigation.homeGraph
 import com.challenge.movieflux.feature.login.navigation.loginGraph
 
+import com.challenge.movieflux.feature.home.navigation.navigateToHome
+
 @Composable
 fun MovieFluxNavHost(
     navController: NavHostController = rememberNavController(),
@@ -18,6 +20,9 @@ fun MovieFluxNavHost(
         startDestination = startDestination
     ) {
         loginGraph(
+            onLoginSuccess = {
+                navController.navigateToHome()
+            },
             onBackBtnClick = {}
         )
         homeGraph()

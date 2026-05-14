@@ -11,10 +11,12 @@ fun NavController.navigateToLoginScreen() {
 }
 
 fun NavGraphBuilder.loginGraph(
+    onLoginSuccess: () -> Unit,
     onBackBtnClick: () -> Unit
 ) {
     composable(route = MovieFluxRoutes.LOGIN) {
         LoginScreenRoute(
+            onLoginSuccess = onLoginSuccess,
             onBackBtnClick = onBackBtnClick
         )
     }

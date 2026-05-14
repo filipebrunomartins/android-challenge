@@ -10,6 +10,7 @@ android {
 
 dependencies {
     implementation(libs.androidx.biometric)
+    implementation(libs.androidx.biometric.compose)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.security.crypto)
 }
