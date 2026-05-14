@@ -55,7 +55,9 @@ fun MovieFluxBiometricPrompt(
 
         AuthenticationRequest.Biometric.Builder(
             title = "Login seguro",
-            authFallback = AuthenticationRequest.Biometric.Fallback.DeviceCredential,
+            authFallback = AuthenticationRequest.Biometric.Fallback.NegativeButton(
+                "Cancelar"
+            ),
         )
             .setSubtitle("Use sua biometria")
             .setMinStrength(
