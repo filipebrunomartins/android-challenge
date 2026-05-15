@@ -4,9 +4,9 @@ import com.challenge.movieflux.core.domain.login.repository.LoginRepository
 import javax.inject.Inject
 
 class DisableBiometricUseCase @Inject constructor(
-    private val loginRepository: LoginRepository
+    private val repository: LoginRepository
 ) {
     operator fun invoke() {
-        loginRepository.setBiometricEnabled(false)
+        repository.setBiometricEnabled(false)
     }
 }

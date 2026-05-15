@@ -117,12 +117,30 @@ fun LoginScreen(
                 )
             }
 
+            is LoginUiState.AskFastLogin -> {
+                AlertDialog(
+                    onDismissRequest = { viewModel.askFatLoginNotNow() },
+                    title = { Text("Validar biometria") },
+                    text = { Text("Bem-vindo de volta. Deseja fazer o login rápido?") },
+                    confirmButton = {
+                        TextButton(onClick = { viewModel.askBiometricConfirm() }) {
+                            Text("Validar")
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { viewModel.askFatLoginNotNow() }) {
+                            Text("Agora não")
+                        }
+                    }
+                )
+            }
+
             is LoginUiState.BiometricPrompt -> {
                 MovieFluxBiometricPrompt(
                     triggerAuthentication = true,
                     onSuccess = { viewModel.onBiometricSuccess() },
                     onError = { viewModel.onBiometricFailed() },
-                    onFailed = { }
+                    onFailed = { } //Todo
                 )
             }
             else -> {}

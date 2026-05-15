@@ -23,14 +23,14 @@ class SessionManager @Inject constructor(
     }
 
     fun logout() {
-        securePrefs.clearSession()
+        securePrefs.logout()
     }
 
     fun isLoggedIn(): Boolean {
         return securePrefs.isLoggedIn()
     }
 
-    fun enableBiometric() {
+    fun enableBiometric(username: String) {
         securePrefs.setBiometricEnabled(true)
     }
 

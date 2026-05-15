@@ -31,9 +31,22 @@ class SecurePrefs @Inject constructor(
         }
     }
 
+    fun logout() {
+        prefs.edit {
+            remove("session_user")
+            putBoolean("logged_in", false)
+        }
+    }
+
+    fun setLoggedIn(loggedIn: Boolean) {
+        prefs.edit {
+            putBoolean("logged_in", loggedIn)
+        }
+    }
+
     fun clearSession() {
         prefs.edit {
-            clear()
+            putBoolean("logged_in", false)
         }
     }
 

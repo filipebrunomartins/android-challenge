@@ -19,9 +19,8 @@ android {
 
 dependencies {
     api(projects.core.common)
+    api(projects.core.model)
 
-    implementation(libs.retrofit.gson)
-    implementation(libs.gson)
     implementation(libs.coil.kt)
     implementation(libs.coil.kt.svg)
     implementation(libs.kotlinx.serialization.json)

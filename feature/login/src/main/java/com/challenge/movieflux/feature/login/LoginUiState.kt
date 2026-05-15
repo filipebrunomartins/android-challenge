@@ -8,6 +8,7 @@ sealed interface LoginUiState {
     data object Initial : LoginUiState
 
     data object AskToEnableBiometric : LoginUiState
+    data object AskFastLogin : LoginUiState
 
     data object BiometricPrompt : LoginUiState
 

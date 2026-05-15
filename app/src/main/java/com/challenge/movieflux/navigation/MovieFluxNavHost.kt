@@ -28,7 +28,11 @@ fun MovieFluxNavHost(
                 navController.navigateToHome()
             }
         )
-        homeGraph()
+        homeGraph(
+            onMovieClick = { movieId ->
+                // TODO: Navigate to details
+            }
+        )
         favoritesGraph()
         profileGraph(
             onLogout = {

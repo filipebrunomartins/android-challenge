@@ -6,6 +6,7 @@ import com.challenge.movieflux.core.domain.login.usecase.CheckSessionUseCase
 import com.challenge.movieflux.core.domain.login.usecase.EnableBiometricUseCase
 import com.challenge.movieflux.core.domain.login.usecase.IsBiometricEnabledUseCase
 import com.challenge.movieflux.core.domain.login.usecase.LoginUseCase
+import com.challenge.movieflux.core.domain.login.usecase.SetLoggedInUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,7 +18,8 @@ class LoginViewModel @Inject constructor(
     private val loginUseCase: LoginUseCase,
     private val checkSessionUseCase: CheckSessionUseCase,
     private val isBiometricEnabledUseCase: IsBiometricEnabledUseCase,
-    private val enableBiometricUseCase: EnableBiometricUseCase
+    private val enableBiometricUseCase: EnableBiometricUseCase,
+    private val setLoggedInUseCase: SetLoggedInUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<LoginUiState>(LoginUiState.Initial)
@@ -39,7 +41,7 @@ class LoginViewModel @Inject constructor(
 
             val biometricEnabled = isBiometricEnabledUseCase()
             _uiState.value = if (biometricEnabled) {
-                LoginUiState.BiometricPrompt
+                LoginUiState.AskFastLogin
             } else {
                 LoginUiState.Initial
             }
@@ -48,7 +50,6 @@ class LoginViewModel @Inject constructor(
 
     fun login(username: String, password: String) {
         viewModelScope.launch {
-
             _uiState.value = LoginUiState.Loading
 
             val success = loginUseCase(username, password)
@@ -71,6 +72,7 @@ class LoginViewModel @Inject constructor(
     private fun enableBiometric() {
         viewModelScope.launch {
             enableBiometricUseCase()
+            setLoggedInUseCase(true)
             _uiState.value = LoginUiState.LoggedIn
         }
     }
@@ -81,6 +83,10 @@ class LoginViewModel @Inject constructor(
 
     fun askBiometricNotNow() {
         _uiState.value = LoginUiState.LoggedIn
+    }
+
+    fun askFatLoginNotNow() {
+        _uiState.value = LoginUiState.Initial
     }
 
     fun onBiometricSuccess() {

@@ -14,9 +14,11 @@ dependencies {
     api(projects.core.domain)
     api(projects.core.common)
     api(projects.core.security)
+    api(projects.core.network)
 //    api(projects.core.database)
 //    api(projects.core.datastore)
-//    api(projects.core.network)
+
+    implementation(libs.retrofit.gson)
 
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.kotlinx.serialization.json)

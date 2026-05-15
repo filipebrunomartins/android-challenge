@@ -4,7 +4,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.NavController
 import com.challenge.movieflux.core.navigation.MovieFluxRoutes
-import com.challenge.movieflux.feature.home.HomeScreen
+import com.challenge.movieflux.feature.home.HomeRoute
 
 fun NavController.navigateToHome() {
     navigate(MovieFluxRoutes.HOME) {
@@ -12,8 +12,10 @@ fun NavController.navigateToHome() {
     }
 }
 
-fun NavGraphBuilder.homeGraph() {
+fun NavGraphBuilder.homeGraph(
+    onMovieClick: (Int) -> Unit
+) {
     composable(MovieFluxRoutes.HOME) {
-        HomeScreen()
+        HomeRoute(onMovieClick = onMovieClick)
     }
 }

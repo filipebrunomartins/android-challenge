@@ -9,7 +9,6 @@ class LoginRepositoryImpl @Inject constructor(
 ) : LoginRepository {
 
     override fun login(username: String, password: String): Boolean {
-        //Todo validar com 2 logins diferentes
         val isValid = (username == "admin" && password == "1234") ||
                 (username == "user" && password == "1234")
 
@@ -20,18 +19,24 @@ class LoginRepositoryImpl @Inject constructor(
         return isValid
     }
 
-    //Todo salva somente username?
     override fun saveSession(username: String) {
         securePrefs.saveSession(username)
     }
 
+    override fun logout() {
+        securePrefs.logout()
+    }
+
     override fun clearSession() {
-        //Todo refazer
-        securePrefs.saveSession("")
+        securePrefs.clearSession()
     }
 
     override fun isLoggedIn(): Boolean {
-        return securePrefs.getSessionUser().isNullOrBlank().not()
+        return securePrefs.isLoggedIn()
+    }
+
+    override fun setLoggedIn(loggedIn: Boolean) {
+        securePrefs.setLoggedIn(loggedIn)
     }
 
     override fun setBiometricEnabled(enabled: Boolean) {
@@ -40,5 +45,9 @@ class LoginRepositoryImpl @Inject constructor(
 
     override fun isBiometricEnabled(): Boolean {
         return securePrefs.isBiometricEnabled()
+    }
+
+    override fun getSessionUser(): String? {
+        return securePrefs.getSessionUser()
     }
 }
