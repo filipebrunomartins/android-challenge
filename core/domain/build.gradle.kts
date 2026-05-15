@@ -8,8 +8,9 @@ android {
     namespace = "com.challenge.movieflux.core.domain"
 }
 
+//todo rever
 dependencies {
-    api(projects.core.data)
+    api(projects.core.common)
     api(projects.core.model)
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.javax.inject)

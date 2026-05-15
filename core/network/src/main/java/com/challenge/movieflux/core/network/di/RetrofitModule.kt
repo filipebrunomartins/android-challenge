@@ -7,7 +7,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import jakarta.inject.Singleton
+import javax.inject.Singleton
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -30,6 +30,7 @@ object RetrofitModule {
 
     @Provides
     @Singleton
+    @AppBaseUrl
     fun provideRetrofit(
         @AppBaseUrl baseUrl: String,
         okHttpClient: OkHttpClient,

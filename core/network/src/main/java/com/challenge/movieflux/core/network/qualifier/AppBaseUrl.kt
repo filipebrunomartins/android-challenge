@@ -1,6 +1,6 @@
 package com.challenge.movieflux.core.network.qualifier
 
-import jakarta.inject.Qualifier
+import javax.inject.Qualifier
 
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
