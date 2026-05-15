@@ -2,7 +2,10 @@ package com.challenge.movieflux.feature.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.challenge.movieflux.core.common.results.BaseResult
+import com.challenge.movieflux.core.domain.movie.usecase.GetPopularMoviesParams
 import com.challenge.movieflux.core.domain.movie.usecase.GetPopularMoviesUseCase
+import com.challenge.movieflux.core.domain.movie.usecase.SearchMoviesParams
 import com.challenge.movieflux.core.domain.movie.usecase.SearchMoviesUseCase
 import com.challenge.movieflux.core.model.data.Movie
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -28,6 +31,7 @@ sealed interface HomeUiState {
         val isSearching: Boolean = false,
         val canLoadMore: Boolean = true
     ) : HomeUiState
+
     data class Error(val message: String) : HomeUiState
     data object Empty : HomeUiState
 }
@@ -84,27 +88,14 @@ class HomeViewModel @Inject constructor(
         isFetching = true
 
         viewModelScope.launch {
-//            getPopularMoviesUseCase(currentPage)
-//                .onStart {
-//                    if (currentPage == 1) _uiState.value = HomeUiState.Loading
-//                }
-//                .catch { e ->
-//                    _uiState.value = HomeUiState.Error(e.message ?: "Unknown error")
-//                    isFetching = false
-//                }
-//                .collect { movies ->
-//                    if (movies.isEmpty() && currentPage == 1) {
-//                        _uiState.value = HomeUiState.Empty
-//                    } else {
-//                        allMovies.addAll(movies)
-//                        _uiState.value = HomeUiState.Success(
-//                            movies = allMovies.toList(),
-//                            canLoadMore = movies.isNotEmpty()
-//                        )
-//                        currentPage++
-//                    }
-//                    isFetching = false
-//                }
+            getPopularMoviesUseCase.execute(GetPopularMoviesParams(currentPage))
+                .collect { response ->
+                    when (response) {
+                        is BaseResult.Error -> {}
+                        BaseResult.Loading -> {}
+                        is BaseResult.Success -> {}
+                    }
+                }
         }
     }
 
@@ -114,28 +105,14 @@ class HomeViewModel @Inject constructor(
         isFetching = true
 
         viewModelScope.launch {
-//            searchMoviesUseCase(query, currentPage)
-//                .onStart {
-//                    _uiState.value = HomeUiState.Loading
-//                }
-//                .catch { e ->
-//                    _uiState.value = HomeUiState.Error(e.message ?: "Unknown error")
-//                    isFetching = false
-//                }
-//                .collect { movies ->
-//                    if (movies.isEmpty()) {
-//                        _uiState.value = HomeUiState.Empty
-//                    } else {
-//                        allMovies.addAll(movies)
-//                        _uiState.value = HomeUiState.Success(
-//                            movies = allMovies.toList(),
-//                            isSearching = true,
-//                            canLoadMore = movies.isNotEmpty()
-//                        )
-//                        currentPage++
-//                    }
-//                    isFetching = false
-//                }
+            searchMoviesUseCase.execute(SearchMoviesParams(query, currentPage))
+                .collect { response ->
+                    when (response) {
+                        is BaseResult.Error -> {}
+                        BaseResult.Loading -> {}
+                        is BaseResult.Success -> {}
+                    }
+                }
         }
     }
 
@@ -154,25 +131,14 @@ class HomeViewModel @Inject constructor(
         isFetching = true
 
         viewModelScope.launch {
-//            searchMoviesUseCase(query, currentPage)
-//                .catch { e ->
-//                    // Handle error silently or update state
-//                    isFetching = false
-//                }
-//                .collect { movies ->
-//                    if (movies.isNotEmpty()) {
-//                        allMovies.addAll(movies)
-//                        _uiState.value = HomeUiState.Success(
-//                            movies = allMovies.toList(),
-//                            isSearching = true,
-//                            canLoadMore = true
-//                        )
-//                        currentPage++
-//                    } else {
-//                        _uiState.value = (uiState.value as? HomeUiState.Success)?.copy(canLoadMore = false) ?: uiState.value
-//                    }
-//                    isFetching = false
-//                }
+            searchMoviesUseCase.execute(SearchMoviesParams(query, currentPage))
+                .collect { response ->
+                    when (response) {
+                        is BaseResult.Error -> {}
+                        BaseResult.Loading -> {}
+                        is BaseResult.Success -> {}
+                    }
+                }
         }
     }
 }
