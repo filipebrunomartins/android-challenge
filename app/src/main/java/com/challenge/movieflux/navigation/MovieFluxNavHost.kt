@@ -37,7 +37,11 @@ fun MovieFluxNavHost(
                 navController.popBackStack()
             }
         )
-        favoritesGraph()
+        favoritesGraph(
+            onMovieClick = { movieId ->
+                navController.navigateToMovieDetail(movieId)
+            }
+        )
         profileGraph(
             onLogout = {
                 navController.navigateToLoginScreen()

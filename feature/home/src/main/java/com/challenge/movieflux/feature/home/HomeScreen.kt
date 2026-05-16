@@ -31,14 +31,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import coil.compose.AsyncImage
 import com.challenge.movieflux.core.designsystem.icon.MovieFluxIcons
 import com.challenge.movieflux.core.model.data.Movie
+import com.challenge.movieflux.core.designsystem.component.MovieCard
 
 @Composable
 internal fun HomeRoute(
@@ -54,6 +52,7 @@ internal fun HomeRoute(
         searchQuery = searchQuery,
         onSearchQueryChange = viewModel::onSearchQueryChanged,
         onMovieClick = onMovieClick,
+        onToggleFavorite = viewModel::toggleFavorite,
         onLoadMore = viewModel::loadMore,
         modifier = modifier
     )
@@ -65,6 +64,7 @@ internal fun HomeScreen(
     searchQuery: String,
     onSearchQueryChange: (String) -> Unit,
     onMovieClick: (Int) -> Unit,
+    onToggleFavorite: (Movie) -> Unit,
     onLoadMore: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -87,6 +87,7 @@ internal fun HomeScreen(
                 MovieGrid(
                     movies = uiState.movies,
                     onMovieClick = onMovieClick,
+                    onToggleFavorite = onToggleFavorite,
                     onLoadMore = onLoadMore,
                     canLoadMore = uiState.canLoadMore
                 )
@@ -134,6 +135,7 @@ fun SearchBar(
 fun MovieGrid(
     movies: List<Movie>,
     onMovieClick: (Int) -> Unit,
+    onToggleFavorite: (Movie) -> Unit,
     onLoadMore: () -> Unit,
     canLoadMore: Boolean
 ) {
@@ -163,8 +165,13 @@ fun MovieGrid(
         modifier = Modifier.fillMaxSize()
     ) {
         itemsIndexed(movies) { index, movie ->
-            movie.posterPath
-            MovieItem(movie = movie, onClick = { onMovieClick(movie.id) })
+            MovieCard(
+                title = movie.title,
+                posterPath = movie.posterPath,
+                isFavorite = movie.isFavorite,
+                onMovieClick = { onMovieClick(movie.id) },
+                onToggleFavorite = { onToggleFavorite(movie) }
+            )
         }
         
         if (canLoadMore) {
@@ -178,39 +185,6 @@ fun MovieGrid(
                     CircularProgressIndicator()
                 }
             }
-        }
-    }
-}
-
-@Composable
-fun MovieItem(
-    movie: Movie,
-    onClick: () -> Unit
-) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick)
-    ) {
-        Column {
-            val imageUrl = movie.posterPath?.let { "https://image.tmdb.org/t/p/w500$it" }
-            AsyncImage(
-                model = imageUrl,
-                contentDescription = movie.title,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(2f / 3f),
-                contentScale = ContentScale.Crop,
-                placeholder = null,
-                error = null
-            )
-            Text(
-                text = movie.title,
-                style = MaterialTheme.typography.titleSmall,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.padding(8.dp)
-            )
         }
     }
 }

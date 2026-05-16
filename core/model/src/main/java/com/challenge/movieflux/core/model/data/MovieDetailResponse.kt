@@ -14,3 +14,15 @@ data class MovieDetailResponse(
     val revenue: Long?,
     val status: String?
 )
+
+//Todo repensar
+fun MovieDetailResponse.asMovie() = Movie(
+    id = id,
+    title = title,
+    posterPath = posterPath,
+    backdropPath = backdropPath,
+    releaseDate = releaseDate,
+    voteAverage = voteAverage,
+    overview = overview,
+    genreIds = genres.map { it.id }
+)

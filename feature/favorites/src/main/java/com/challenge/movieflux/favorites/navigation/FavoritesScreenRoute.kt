@@ -1,9 +1,9 @@
 package com.challenge.movieflux.favorites.navigation
 
 import androidx.compose.runtime.Composable
-import com.challenge.movieflux.favorites.FavoritesScreen
+import com.challenge.movieflux.favorites.FavoritesRoute
 
 @Composable
-internal fun FavoritesScreenRoute() {
-    FavoritesScreen()
+internal fun FavoritesScreenRoute(onMovieClick: (Int) -> Unit) {
+    FavoritesRoute(onMovieClick = onMovieClick)
 }

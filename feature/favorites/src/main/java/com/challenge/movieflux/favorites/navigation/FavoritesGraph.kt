@@ -9,8 +9,8 @@ fun NavController.navigateToFavoritesScreen() {
     navigate(MovieFluxRoutes.FAVORITES)
 }
 
-fun NavGraphBuilder.favoritesGraph() {
+fun NavGraphBuilder.favoritesGraph(onMovieClick: (Int) -> Unit) {
     composable(route = MovieFluxRoutes.FAVORITES) {
-        FavoritesScreenRoute()
+        FavoritesScreenRoute(onMovieClick = onMovieClick)
     }
 }

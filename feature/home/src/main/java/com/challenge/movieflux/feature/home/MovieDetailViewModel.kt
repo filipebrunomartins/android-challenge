@@ -7,11 +7,15 @@ import com.challenge.movieflux.core.common.results.BaseResult
 import com.challenge.movieflux.core.domain.movie.usecase.GetGenresUseCase
 import com.challenge.movieflux.core.domain.movie.usecase.GetMovieDetailParams
 import com.challenge.movieflux.core.domain.movie.usecase.GetMovieDetailUseCase
+import com.challenge.movieflux.core.domain.movie.usecase.IsMovieFavoriteUseCase
+import com.challenge.movieflux.core.domain.movie.usecase.ToggleFavoriteUseCase
 import com.challenge.movieflux.core.model.data.MovieDetailResponse
+import com.challenge.movieflux.core.model.data.asMovie
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -28,7 +32,9 @@ sealed interface MovieDetailUiState {
 class MovieDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val getMovieDetailUseCase: GetMovieDetailUseCase,
-    private val getGenresUseCase: GetGenresUseCase
+    private val getGenresUseCase: GetGenresUseCase,
+    private val isMovieFavoriteUseCase: IsMovieFavoriteUseCase,
+    private val toggleFavoriteUseCase: ToggleFavoriteUseCase
 ) : ViewModel() {
 
     private val movieId: Int = checkNotNull(savedStateHandle["movieId"])
@@ -38,6 +44,19 @@ class MovieDetailViewModel @Inject constructor(
 
     init {
         fetchMovieDetail()
+        observeFavoriteStatus()
+    }
+
+    private fun observeFavoriteStatus() {
+        viewModelScope.launch {
+            isMovieFavoriteUseCase(movieId).collect { isFavorite ->
+                _uiState.update { state ->
+                    if (state is MovieDetailUiState.Success) {
+                        state.copy(isFavorite = isFavorite)
+                    } else state
+                }
+            }
+        }
     }
 
     private fun fetchMovieDetail() {
@@ -50,7 +69,9 @@ class MovieDetailViewModel @Inject constructor(
                         if (movie.genres.isEmpty() || movie.genres.all { it.name.isEmpty() }) {
                             fetchGenresAndMap(movie)
                         } else {
-                            _uiState.value = MovieDetailUiState.Success(movie)
+                            _uiState.update { 
+                                MovieDetailUiState.Success(movieDetail = movie)
+                            }
                         }
                     }
                     is BaseResult.Error -> _uiState.value = MovieDetailUiState.Error(result.message)
@@ -67,15 +88,24 @@ class MovieDetailViewModel @Inject constructor(
                     val updatedGenres = movie.genres.map { genre ->
                         genreMap[genre.id] ?: genre
                     }
-                    _uiState.value = MovieDetailUiState.Success(movie.copy(genres = updatedGenres))
+                    _uiState.update {
+                        MovieDetailUiState.Success(movieDetail = movie.copy(genres = updatedGenres))
+                    }
                 } else if (result is BaseResult.Error) {
-                    _uiState.value = MovieDetailUiState.Success(movie)
+                    _uiState.update {
+                        MovieDetailUiState.Success(movieDetail = movie)
+                    }
                 }
             }
         }
     }
 
     fun toggleFavorite() {
-        // Implementation for favorites would go here
+        val state = _uiState.value
+        if (state is MovieDetailUiState.Success) {
+            viewModelScope.launch {
+                toggleFavoriteUseCase(state.movieDetail.asMovie())
+            }
+        }
     }
 }

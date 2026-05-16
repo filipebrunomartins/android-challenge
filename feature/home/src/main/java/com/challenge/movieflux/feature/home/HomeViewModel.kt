@@ -8,6 +8,8 @@ import com.challenge.movieflux.core.domain.movie.usecase.GetPopularMoviesParams
 import com.challenge.movieflux.core.domain.movie.usecase.GetPopularMoviesUseCase
 import com.challenge.movieflux.core.domain.movie.usecase.SearchMoviesParams
 import com.challenge.movieflux.core.domain.movie.usecase.SearchMoviesUseCase
+import com.challenge.movieflux.core.domain.movie.usecase.GetFavoriteMovieIdsUseCase
+import com.challenge.movieflux.core.domain.movie.usecase.ToggleFavoriteUseCase
 import com.challenge.movieflux.core.model.data.Movie
 import com.challenge.movieflux.core.model.data.PopularMoviesResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,6 +19,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.update
@@ -38,7 +41,9 @@ sealed interface HomeUiState {
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val getPopularMoviesUseCase: GetPopularMoviesUseCase,
-    private val searchMoviesUseCase: SearchMoviesUseCase
+    private val searchMoviesUseCase: SearchMoviesUseCase,
+    private val getFavoriteMovieIdsUseCase: GetFavoriteMovieIdsUseCase,
+    private val toggleFavoriteUseCase: ToggleFavoriteUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<HomeUiState>(HomeUiState.Loading)
@@ -47,6 +52,8 @@ class HomeViewModel @Inject constructor(
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
 
+    private val _movies = MutableStateFlow<List<Movie>>(emptyList())
+
     private var currentPage = 1
     private var isFetching = false
     private var fetchJob: Job? = null
@@ -54,6 +61,25 @@ class HomeViewModel @Inject constructor(
 
     init {
         observeSearchQuery()
+        observeFavorites()
+    }
+
+    private fun observeFavorites() {
+        viewModelScope.launch {
+            combine(_movies, getFavoriteMovieIdsUseCase()) { movies, favoriteIds ->
+                movies.map { movie ->
+                    movie.copy(isFavorite = favoriteIds.contains(movie.id))
+                }
+            }.collect { updatedMovies ->
+                _uiState.update { state ->
+                    if (state is HomeUiState.Success) {
+                        state.copy(movies = updatedMovies)
+                    } else if (state is HomeUiState.Empty && updatedMovies.isNotEmpty()) {
+                        HomeUiState.Success(movies = updatedMovies)
+                    } else state
+                }
+            }
+        }
     }
 
     fun onSearchQueryChanged(query: String) {
@@ -69,6 +95,7 @@ class HomeViewModel @Inject constructor(
                 .collectLatest { query ->
                     currentPage = 1
                     allMovies.clear()
+                    _movies.value = emptyList()
                     isFetching = false
                     fetchMovies(query)
                 }
@@ -108,16 +135,19 @@ class HomeViewModel @Inject constructor(
                 isFetching = false
                 val newMovies = response.data.results
                 allMovies.addAll(newMovies)
+                _movies.value = allMovies.toList()
 
                 if (allMovies.isEmpty()) {
                     _uiState.value = HomeUiState.Empty
                 } else {
                     val canLoadMore = response.data.page < response.data.totalPages
-                    _uiState.value = HomeUiState.Success(
-                        movies = allMovies.toList(),
-                        isSearching = _searchQuery.value.isNotEmpty(),
-                        canLoadMore = canLoadMore
-                    )
+                    _uiState.update { state ->
+                        HomeUiState.Success(
+                            movies = _movies.value,
+                            isSearching = _searchQuery.value.isNotEmpty(),
+                            canLoadMore = canLoadMore
+                        )
+                    }
                     if (canLoadMore) {
                         currentPage = response.data.page + 1
                     }
@@ -145,6 +175,12 @@ class HomeViewModel @Inject constructor(
         val state = _uiState.value
         if (state is HomeUiState.Success && state.canLoadMore) {
              fetchMovies(_searchQuery.value)
+        }
+    }
+
+    fun toggleFavorite(movie: Movie) {
+        viewModelScope.launch {
+            toggleFavoriteUseCase(movie)
         }
     }
 }
