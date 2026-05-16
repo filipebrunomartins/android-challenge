@@ -1,19 +1,18 @@
 package com.challenge.movieflux.core.network.model
 
-import com.challenge.movieflux.core.model.data.MovieDetailResponse
-import kotlinx.serialization.SerialName
+import com.google.gson.annotations.SerializedName
 
 data class NetworkMovieDetailResponse(
     val id: Int,
     val title: String,
     val overview: String,
-    @SerialName("poster_path")
+    @SerializedName("poster_path")
     val posterPath: String?,
-    @SerialName("backdrop_path")
+    @SerializedName("backdrop_path")
     val backdropPath: String?,
-    @SerialName("release_date")
+    @SerializedName("release_date")
     val releaseDate: String?,
-    @SerialName("vote_average")
+    @SerializedName("vote_average")
     val voteAverage: Double,
     val runtime: Int?,
     val genres: List<NetworkGenre>,

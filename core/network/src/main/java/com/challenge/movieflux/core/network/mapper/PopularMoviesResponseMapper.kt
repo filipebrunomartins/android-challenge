@@ -1,5 +1,6 @@
 package com.challenge.movieflux.core.network.mapper
 
+import android.util.Log
 import com.challenge.movieflux.core.model.data.Movie
 import com.challenge.movieflux.core.model.data.PopularMoviesResponse
 import com.challenge.movieflux.core.network.model.NetworkMovie
@@ -12,7 +13,7 @@ class PopularMoviesResponseMapper @Inject constructor(
 ) : Mapper<NetworkPopularMoviesResponse, PopularMoviesResponse> {
 
     override fun mapFromApiResponse(type: NetworkPopularMoviesResponse): PopularMoviesResponse {
-        return  PopularMoviesResponse(
+        return PopularMoviesResponse(
             page = type.page,
             results = type.results.map { mapper.mapFromApiResponse(it) },
             totalPages = type.totalPages,
@@ -24,7 +25,7 @@ class PopularMoviesResponseMapper @Inject constructor(
 class MovieMapper @Inject constructor() : Mapper<NetworkMovie, Movie> {
 
     override fun mapFromApiResponse(type: NetworkMovie): Movie {
-        return   Movie(
+        return Movie(
             id = type.id,
             title = type.title,
             posterPath = type.posterPath,
@@ -32,7 +33,7 @@ class MovieMapper @Inject constructor() : Mapper<NetworkMovie, Movie> {
             releaseDate = type.releaseDate,
             voteAverage = type.voteAverage,
             overview = type.overview,
-            genreIds = type.genreIds
+            genreIds = type.genreIds ?: emptyList()
         )
     }
 }

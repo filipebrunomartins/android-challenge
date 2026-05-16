@@ -1,5 +1,6 @@
 package com.challenge.movieflux.feature.home
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
@@ -137,16 +139,18 @@ fun MovieGrid(
 ) {
     val listState = rememberLazyGridState()
 
-    val shouldLoadMore = remember {
+    val shouldLoadMore by remember {
         derivedStateOf {
-            val lastVisibleItemIndex = listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
             val totalItemsCount = listState.layoutInfo.totalItemsCount
-            canLoadMore && lastVisibleItemIndex >= totalItemsCount - 5
+            val lastVisibleItemIndex = listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
+            
+            // Dispara quando faltam 4 itens para chegar ao fim (ajustado de 5 para maior sensibilidade)
+            canLoadMore && totalItemsCount > 0 && lastVisibleItemIndex >= totalItemsCount - 4
         }
     }
 
-    LaunchedEffect(shouldLoadMore.value) {
-        if (shouldLoadMore.value) {
+    LaunchedEffect(shouldLoadMore) {
+        if (shouldLoadMore) {
             onLoadMore()
         }
     }
@@ -160,11 +164,12 @@ fun MovieGrid(
         modifier = Modifier.fillMaxSize()
     ) {
         itemsIndexed(movies) { index, movie ->
+            movie.posterPath
             MovieItem(movie = movie, onClick = { onMovieClick(movie.id) })
         }
         
         if (canLoadMore) {
-            item {
+            item(span = { GridItemSpan(maxLineSpan) }) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -189,13 +194,16 @@ fun MovieItem(
             .clickable(onClick = onClick)
     ) {
         Column {
+            val imageUrl = movie.posterPath?.let { "https://image.tmdb.org/t/p/w500$it" }
             AsyncImage(
-                model = "https://image.tmdb.org/t/p/w500${movie.posterPath}",
+                model = imageUrl,
                 contentDescription = movie.title,
                 modifier = Modifier
                     .fillMaxWidth()
                     .aspectRatio(2f / 3f),
-                contentScale = ContentScale.Crop
+                contentScale = ContentScale.Crop,
+                placeholder = null,
+                error = null
             )
             Text(
                 text = movie.title,
