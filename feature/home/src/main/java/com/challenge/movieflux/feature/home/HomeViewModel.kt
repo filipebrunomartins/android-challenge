@@ -17,12 +17,13 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -46,13 +47,42 @@ class HomeViewModel @Inject constructor(
     private val toggleFavoriteUseCase: ToggleFavoriteUseCase
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow<HomeUiState>(HomeUiState.Loading)
-    val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
-
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
 
     private val _movies = MutableStateFlow<List<Movie>>(emptyList())
+    private val _isLoading = MutableStateFlow(false)
+    private val _error = MutableStateFlow<String?>(null)
+    private val _canLoadMore = MutableStateFlow(true)
+
+    val uiState: StateFlow<HomeUiState> = combine(
+        _movies,
+        getFavoriteMovieIdsUseCase(),
+        _searchQuery,
+        combine(_isLoading, _error, _canLoadMore) { isLoading, error, canLoadMore ->
+            Triple(isLoading, error, canLoadMore)
+        }
+    ) { movies, favoriteIds, query, networkState ->
+        val (isLoading, error, canLoadMore) = networkState
+        val updatedMovies = movies.map { movie ->
+            movie.copy(isFavorite = favoriteIds.contains(movie.id))
+        }
+
+        when {
+            isLoading && updatedMovies.isEmpty() -> HomeUiState.Loading
+            error != null && updatedMovies.isEmpty() -> HomeUiState.Error(error)
+            updatedMovies.isEmpty() && !isLoading -> HomeUiState.Empty
+            else -> HomeUiState.Success(
+                movies = updatedMovies,
+                isSearching = query.isNotEmpty(),
+                canLoadMore = canLoadMore
+            )
+        }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = HomeUiState.Loading
+    )
 
     private var currentPage = 1
     private var isFetching = false
@@ -61,25 +91,6 @@ class HomeViewModel @Inject constructor(
 
     init {
         observeSearchQuery()
-        observeFavorites()
-    }
-
-    private fun observeFavorites() {
-        viewModelScope.launch {
-            combine(_movies, getFavoriteMovieIdsUseCase()) { movies, favoriteIds ->
-                movies.map { movie ->
-                    movie.copy(isFavorite = favoriteIds.contains(movie.id))
-                }
-            }.collect { updatedMovies ->
-                _uiState.update { state ->
-                    if (state is HomeUiState.Success) {
-                        state.copy(movies = updatedMovies)
-                    } else if (state is HomeUiState.Empty && updatedMovies.isNotEmpty()) {
-                        HomeUiState.Success(movies = updatedMovies)
-                    } else state
-                }
-            }
-        }
     }
 
     fun onSearchQueryChanged(query: String) {
@@ -97,6 +108,7 @@ class HomeViewModel @Inject constructor(
                     allMovies.clear()
                     _movies.value = emptyList()
                     isFetching = false
+                    _error.value = null
                     fetchMovies(query)
                 }
         }
@@ -109,6 +121,7 @@ class HomeViewModel @Inject constructor(
         
         fetchJob?.cancel()
         isFetching = true
+        _isLoading.value = true
 
         fetchJob = viewModelScope.launch {
             val flow = if (query.isBlank()) {
@@ -126,44 +139,33 @@ class HomeViewModel @Inject constructor(
     private fun handleResponse(response: BaseResult<PopularMoviesResponse>) {
         when (response) {
             is BaseResult.Loading -> {
-                if (currentPage == 1 && allMovies.isEmpty()) {
-                    _uiState.value = HomeUiState.Loading
+                if (allMovies.isEmpty()) {
+                    _isLoading.value = true
                 }
             }
 
             is BaseResult.Success -> {
                 isFetching = false
+                _isLoading.value = false
+                _error.value = null
                 val newMovies = response.data.results
                 allMovies.addAll(newMovies)
                 _movies.value = allMovies.toList()
 
-                if (allMovies.isEmpty()) {
-                    _uiState.value = HomeUiState.Empty
-                } else {
-                    val canLoadMore = response.data.page < response.data.totalPages
-                    _uiState.update { state ->
-                        HomeUiState.Success(
-                            movies = _movies.value,
-                            isSearching = _searchQuery.value.isNotEmpty(),
-                            canLoadMore = canLoadMore
-                        )
-                    }
-                    if (canLoadMore) {
-                        currentPage = response.data.page + 1
-                    }
+                val canLoadMore = response.data.page < response.data.totalPages
+                _canLoadMore.value = canLoadMore
+                if (canLoadMore) {
+                    currentPage = response.data.page + 1
                 }
             }
 
             is BaseResult.Error -> {
                 isFetching = false
+                _isLoading.value = false
                 if (allMovies.isEmpty()) {
-                    _uiState.value = HomeUiState.Error(response.message)
+                    _error.value = response.message
                 } else {
-                    _uiState.update { state ->
-                        if (state is HomeUiState.Success) {
-                            state.copy(canLoadMore = false)
-                        } else state
-                    }
+                    _canLoadMore.value = false
                 }
             }
         }
@@ -172,8 +174,7 @@ class HomeViewModel @Inject constructor(
     fun loadMore() {
         if (isFetching) return
         
-        val state = _uiState.value
-        if (state is HomeUiState.Success && state.canLoadMore) {
+        if (_canLoadMore.value) {
              fetchMovies(_searchQuery.value)
         }
     }
