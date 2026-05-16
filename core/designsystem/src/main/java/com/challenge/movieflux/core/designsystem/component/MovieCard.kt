@@ -12,7 +12,6 @@ import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -22,6 +21,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.challenge.movieflux.core.designsystem.theme.MovieFluxTheme
 
 @Composable
 fun MovieCard(
@@ -61,7 +61,7 @@ fun MovieCard(
             }
             Text(
                 text = title,
-                style = MaterialTheme.typography.titleSmall,
+                style = MovieFluxTheme.typography.titleSmall,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.padding(8.dp)

@@ -10,7 +10,6 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -21,6 +20,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.challenge.movieflux.core.designsystem.component.MovieCard
+import com.challenge.movieflux.core.designsystem.theme.MovieFluxTheme
 import com.challenge.movieflux.core.model.data.Movie
 
 @Composable
@@ -49,7 +49,7 @@ internal fun FavoritesScreen(
     Column(modifier = modifier.fillMaxSize()) {
         Text(
             text = "Meus Favoritos",
-            style = MaterialTheme.typography.headlineMedium,
+            style = MovieFluxTheme.typography.headlineMedium,
             modifier = Modifier.padding(16.dp)
         )
 
@@ -82,7 +82,7 @@ internal fun FavoritesScreen(
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Text(
                         text = "Você ainda não favoritou nenhum filme.",
-                        style = MaterialTheme.typography.bodyLarge,
+                        style = MovieFluxTheme.typography.bodyLarge,
                         textAlign = TextAlign.Center,
                         modifier = Modifier.padding(32.dp)
                     )

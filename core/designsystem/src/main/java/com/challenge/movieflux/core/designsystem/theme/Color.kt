@@ -1,5 +1,8 @@
 package com.challenge.movieflux.core.designsystem.theme
 
+import androidx.compose.material3.ColorScheme
+import androidx.compose.material3.lightColorScheme
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 
 // Primary
@@ -25,3 +28,4 @@ val SurfaceDark = Color(0xFF0F172A)
 // Error
 val Red40 = Color(0xFFDC2626)
 val Red80 = Color(0xFFFCA5A5)
+

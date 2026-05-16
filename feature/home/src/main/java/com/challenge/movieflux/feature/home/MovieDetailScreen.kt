@@ -18,7 +18,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -32,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.challenge.movieflux.core.designsystem.icon.MovieFluxIcons
+import com.challenge.movieflux.core.designsystem.theme.MovieFluxTheme
 import com.challenge.movieflux.core.model.data.MovieDetailResponse
 
 @Composable
@@ -80,7 +80,7 @@ internal fun MovieDetailScreen(
                 Text(
                     text = uiState.message,
                     modifier = Modifier.align(Alignment.Center),
-                    color = MaterialTheme.colorScheme.error
+                    color = MovieFluxTheme.colorScheme.error
                 )
             }
         }
@@ -121,7 +121,7 @@ fun MovieDetailContent(
                 Icon(
                     imageVector = MovieFluxIcons.ArrowBack,
                     contentDescription = "Back",
-                    tint = MaterialTheme.colorScheme.onSurface
+                    tint = MovieFluxTheme.colorScheme.onSurface
                 )
             }
         }
@@ -133,7 +133,7 @@ fun MovieDetailContent(
             ) {
                 Text(
                     text = movie.title,
-                    style = MaterialTheme.typography.headlineMedium,
+                    style = MovieFluxTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.weight(1f)
                 )
@@ -142,7 +142,7 @@ fun MovieDetailContent(
                     Icon(
                         imageVector = if (isFavorite) MovieFluxIcons.Favorite else MovieFluxIcons.FavoriteBorder,
                         contentDescription = "Favorite",
-                        tint = if (isFavorite) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline
+                        tint = if (isFavorite) MovieFluxTheme.colorScheme.primary else MovieFluxTheme.colorScheme.outline
                     )
                 }
                 
@@ -160,13 +160,13 @@ fun MovieDetailContent(
                 Icon(
                     imageVector = MovieFluxIcons.StarRate,
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary,
+                    tint = MovieFluxTheme.colorScheme.primary,
                     modifier = Modifier.size(20.dp)
                 )
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
                     text = String.format("%.1f", movie.voteAverage),
-                    style = MaterialTheme.typography.bodyLarge,
+                    style = MovieFluxTheme.typography.bodyLarge,
                     fontWeight = FontWeight.Medium
                 )
                 Spacer(modifier = Modifier.width(16.dp))
@@ -174,7 +174,7 @@ fun MovieDetailContent(
                     if (it.length >= 4) {
                         Text(
                             text = it.take(4),
-                            style = MaterialTheme.typography.bodyLarge
+                            style = MovieFluxTheme.typography.bodyLarge
                         )
                     }
                 }
@@ -184,24 +184,24 @@ fun MovieDetailContent(
 
             Text(
                 text = "Gêneros",
-                style = MaterialTheme.typography.titleMedium,
+                style = MovieFluxTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold
             )
             Text(
                 text = movie.genres.joinToString { it.name },
-                style = MaterialTheme.typography.bodyMedium
+                style = MovieFluxTheme.typography.bodyMedium
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(
                 text = "Sinopse",
-                style = MaterialTheme.typography.titleMedium,
+                style = MovieFluxTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold
             )
             Text(
                 text = movie.overview,
-                style = MaterialTheme.typography.bodyMedium
+                style = MovieFluxTheme.typography.bodyMedium
             )
         }
     }

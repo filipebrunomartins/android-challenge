@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -44,7 +43,7 @@ fun MovieFluxButton(
         modifier = modifier,
         enabled = enabled,
         colors = ButtonDefaults.buttonColors(
-            containerColor = MaterialTheme.colorScheme.onBackground,
+            containerColor = MovieFluxTheme.colorScheme.onBackground,
         ),
         contentPadding = contentPadding,
         content = content,
@@ -110,14 +109,14 @@ fun MovieFluxOutlinedButton(
         modifier = modifier,
         enabled = enabled,
         colors = ButtonDefaults.outlinedButtonColors(
-            contentColor = MaterialTheme.colorScheme.onBackground,
+            contentColor = MovieFluxTheme.colorScheme.onBackground,
         ),
         border = BorderStroke(
             width = MovieFluxButtonDefaults.OutlinedButtonBorderWidth,
             color = if (enabled) {
-                MaterialTheme.colorScheme.outline
+                MovieFluxTheme.colorScheme.outline
             } else {
-                MaterialTheme.colorScheme.onSurface.copy(
+                MovieFluxTheme.colorScheme.onSurface.copy(
                     alpha = MovieFluxButtonDefaults.DISABLED_OUTLINED_BUTTON_BORDER_ALPHA,
                 )
             },
@@ -183,7 +182,7 @@ fun MovieFluxTextButton(
         modifier = modifier,
         enabled = enabled,
         colors = ButtonDefaults.textButtonColors(
-            contentColor = MaterialTheme.colorScheme.onBackground,
+            contentColor = MovieFluxTheme.colorScheme.onBackground,
         ),
         content = content,
     )

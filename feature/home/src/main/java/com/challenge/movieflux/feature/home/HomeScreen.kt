@@ -15,12 +15,8 @@ import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -37,6 +33,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.challenge.movieflux.core.designsystem.icon.MovieFluxIcons
 import com.challenge.movieflux.core.model.data.Movie
 import com.challenge.movieflux.core.designsystem.component.MovieCard
+import com.challenge.movieflux.core.designsystem.theme.MovieFluxTheme
 
 @Composable
 internal fun HomeRoute(
@@ -96,7 +93,7 @@ internal fun HomeScreen(
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Text(
                         text = uiState.message,
-                        color = MaterialTheme.colorScheme.error,
+                        color = MovieFluxTheme.colorScheme.error,
                         modifier = Modifier.padding(16.dp),
                         textAlign = TextAlign.Center
                     )
@@ -106,7 +103,7 @@ internal fun HomeScreen(
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Text(
                         text = "Nenhum filme encontrado",
-                        style = MaterialTheme.typography.bodyLarge,
+                        style = MovieFluxTheme.typography.bodyLarge,
                         textAlign = TextAlign.Center
                     )
                 }

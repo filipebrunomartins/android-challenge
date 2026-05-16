@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.challenge.movieflux.core.designsystem.component.MovieFluxButton
+import com.challenge.movieflux.core.designsystem.theme.MovieFluxTheme
 import com.challenge.movieflux.core.security.MovieFluxBiometricPrompt
 
 @Composable
@@ -50,7 +51,7 @@ fun LoginScreen(
         ) {
             Text(
                 text = "Login",
-                style = MaterialTheme.typography.headlineMedium
+                style = MovieFluxTheme.typography.headlineMedium
             )
 
             Spacer(modifier = Modifier.height(16.dp))
