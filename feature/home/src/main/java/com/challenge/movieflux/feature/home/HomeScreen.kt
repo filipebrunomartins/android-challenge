@@ -144,7 +144,6 @@ fun MovieGrid(
             val totalItemsCount = listState.layoutInfo.totalItemsCount
             val lastVisibleItemIndex = listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
             
-            // Dispara quando faltam 4 itens para chegar ao fim (ajustado de 5 para maior sensibilidade)
             canLoadMore && totalItemsCount > 0 && lastVisibleItemIndex >= totalItemsCount - 4
         }
     }

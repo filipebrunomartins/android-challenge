@@ -67,7 +67,6 @@ class HomeViewModel @Inject constructor(
                 .debounce(500)
                 .distinctUntilChanged()
                 .collectLatest { query ->
-                    Log.d("HomeViewModel", "Query changed: $query, resetting pagination")
                     currentPage = 1
                     allMovies.clear()
                     isFetching = false
@@ -78,14 +77,12 @@ class HomeViewModel @Inject constructor(
 
     private fun fetchMovies(query: String) {
         if (isFetching && currentPage > 1) {
-            Log.d("HomeViewModel", "Already fetching page $currentPage, skipping")
             return
         }
         
         fetchJob?.cancel()
         isFetching = true
-        Log.d("HomeViewModel", "Fetching page $currentPage for query: '$query'")
-        
+
         fetchJob = viewModelScope.launch {
             val flow = if (query.isBlank()) {
                 getPopularMoviesUseCase.execute(GetPopularMoviesParams(currentPage))
@@ -111,8 +108,6 @@ class HomeViewModel @Inject constructor(
                 isFetching = false
                 val newMovies = response.data.results
                 allMovies.addAll(newMovies)
-                
-                Log.d("HomeViewModel", "Success! Loaded ${newMovies.size} movies. Total: ${allMovies.size}")
 
                 if (allMovies.isEmpty()) {
                     _uiState.value = HomeUiState.Empty
@@ -131,7 +126,6 @@ class HomeViewModel @Inject constructor(
 
             is BaseResult.Error -> {
                 isFetching = false
-                Log.e("HomeViewModel", "Error fetching page $currentPage: ${response.message}")
                 if (allMovies.isEmpty()) {
                     _uiState.value = HomeUiState.Error(response.message)
                 } else {
@@ -150,7 +144,6 @@ class HomeViewModel @Inject constructor(
         
         val state = _uiState.value
         if (state is HomeUiState.Success && state.canLoadMore) {
-             Log.d("HomeViewModel", "loadMore triggered")
              fetchMovies(_searchQuery.value)
         }
     }

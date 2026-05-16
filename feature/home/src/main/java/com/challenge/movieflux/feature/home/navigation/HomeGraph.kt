@@ -3,8 +3,11 @@ package com.challenge.movieflux.feature.home.navigation
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.NavController
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
 import com.challenge.movieflux.core.navigation.MovieFluxRoutes
 import com.challenge.movieflux.feature.home.HomeRoute
+import com.challenge.movieflux.feature.home.MovieDetailRoute
 
 fun NavController.navigateToHome() {
     navigate(MovieFluxRoutes.HOME) {
@@ -12,10 +15,24 @@ fun NavController.navigateToHome() {
     }
 }
 
+fun NavController.navigateToMovieDetail(movieId: Int) {
+    navigate(MovieFluxRoutes.DETAIL.replace("{movieId}", movieId.toString()))
+}
+
 fun NavGraphBuilder.homeGraph(
-    onMovieClick: (Int) -> Unit
+    onMovieClick: (Int) -> Unit,
+    onBackClick: () -> Unit
 ) {
     composable(MovieFluxRoutes.HOME) {
         HomeRoute(onMovieClick = onMovieClick)
+    }
+
+    composable(
+        route = MovieFluxRoutes.DETAIL,
+        arguments = listOf(
+            navArgument("movieId") { type = NavType.IntType }
+        )
+    ) {
+        MovieDetailRoute(onBackClick = onBackClick)
     }
 }

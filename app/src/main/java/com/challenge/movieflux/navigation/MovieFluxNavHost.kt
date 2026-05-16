@@ -8,6 +8,7 @@ import com.challenge.movieflux.core.navigation.MovieFluxRoutes
 import com.challenge.movieflux.favorites.navigation.favoritesGraph
 import com.challenge.movieflux.feature.home.navigation.homeGraph
 import com.challenge.movieflux.feature.home.navigation.navigateToHome
+import com.challenge.movieflux.feature.home.navigation.navigateToMovieDetail
 import com.challenge.movieflux.feature.login.navigation.loginGraph
 import com.challenge.movieflux.feature.login.navigation.navigateToLoginScreen
 import com.challenge.movieflux.feature.profile.navigation.profileGraph
@@ -30,7 +31,10 @@ fun MovieFluxNavHost(
         )
         homeGraph(
             onMovieClick = { movieId ->
-                // TODO: Navigate to details
+                navController.navigateToMovieDetail(movieId)
+            },
+            onBackClick = {
+                navController.popBackStack()
             }
         )
         favoritesGraph()

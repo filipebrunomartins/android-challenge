@@ -5,4 +5,5 @@ object MovieFluxRoutes {
     const val HOME = "home"
     const val PROFILE = "profile"
     const val FAVORITES = "favorites"
+    const val DETAIL = "detail/{movieId}"
 }
