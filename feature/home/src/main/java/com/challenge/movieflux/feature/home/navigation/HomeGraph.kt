@@ -3,15 +3,20 @@ package com.challenge.movieflux.feature.home.navigation
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.NavController
+import androidx.navigation.NavOptions
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import com.challenge.movieflux.core.navigation.MovieFluxRoutes
 import com.challenge.movieflux.feature.home.HomeRoute
 import com.challenge.movieflux.feature.home.MovieDetailRoute
 
-fun NavController.navigateToHome() {
-    navigate(MovieFluxRoutes.HOME) {
-        popUpTo(MovieFluxRoutes.LOGIN) { inclusive = true }
+fun NavController.navigateToHome(navOptions: NavOptions? = null) {
+    if (navOptions != null) {
+        navigate(MovieFluxRoutes.HOME, navOptions)
+    } else {
+        navigate(MovieFluxRoutes.HOME) {
+            popUpTo(MovieFluxRoutes.LOGIN) { inclusive = true }
+        }
     }
 }
 

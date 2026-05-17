@@ -15,6 +15,7 @@ import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navOptions
 import com.challenge.movieflux.core.designsystem.icon.MovieFluxIcons
 import com.challenge.movieflux.core.navigation.MovieFluxRoutes
 import com.challenge.movieflux.favorites.navigation.navigateToFavoritesScreen
@@ -43,10 +44,18 @@ fun MovieFluxApp(
                 MovieFluxBottomBar(
                     destinations = topLevelDestinations,
                     onNavigateToDestination = { destination ->
+                        val topLevelNavOptions = navOptions {
+                            popUpTo(MovieFluxRoutes.HOME) {
+                                saveState = true
+                            }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+
                         when (destination) {
-                            TopLevelDestination.HOME -> navController.navigateToHome()
-                            TopLevelDestination.FAVORITES -> navController.navigateToFavoritesScreen()
-                            TopLevelDestination.PROFILE -> navController.navigateToProfileScreen()
+                            TopLevelDestination.HOME -> navController.navigateToHome(topLevelNavOptions)
+                            TopLevelDestination.FAVORITES -> navController.navigateToFavoritesScreen(topLevelNavOptions)
+                            TopLevelDestination.PROFILE -> navController.navigateToProfileScreen(topLevelNavOptions)
                         }
                     },
                     currentDestination = currentDestination

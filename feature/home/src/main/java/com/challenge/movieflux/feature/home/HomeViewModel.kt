@@ -104,6 +104,10 @@ class HomeViewModel @Inject constructor(
                 .debounce(500)
                 .distinctUntilChanged()
                 .collectLatest { query ->
+                    if (allMovies.isNotEmpty() && query == lastQuery) {
+                        return@collectLatest
+                    }
+                    lastQuery = query
                     currentPage = 1
                     allMovies.clear()
                     _movies.value = emptyList()
@@ -113,6 +117,8 @@ class HomeViewModel @Inject constructor(
                 }
         }
     }
+
+    private var lastQuery: String? = ""
 
     private fun fetchMovies(query: String) {
         if (isFetching && currentPage > 1) {
