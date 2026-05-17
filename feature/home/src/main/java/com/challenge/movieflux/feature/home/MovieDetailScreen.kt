@@ -2,6 +2,7 @@ package com.challenge.movieflux.feature.home
 
 import android.content.Context
 import android.content.Intent
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -24,6 +26,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -113,10 +116,16 @@ fun MovieDetailContent(
                     .aspectRatio(16f / 9f),
                 contentScale = ContentScale.Crop
             )
-            
+
             IconButton(
                 onClick = onBackClick,
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier
+                    .padding(16.dp)
+                    .shadow(elevation = 4.dp, shape = CircleShape)
+                    .background(
+                        color = MovieFluxTheme.colorScheme.surface.copy(alpha = 0.7f),
+                        shape = CircleShape
+                    )
             ) {
                 Icon(
                     imageVector = MovieFluxIcons.ArrowBack,
