@@ -27,6 +27,8 @@ class LoginViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<LoginUiState>(LoginUiState.Initial)
     val uiState: StateFlow<LoginUiState> = _uiState
 
+    private var isAuthenticated = false
+
     init {
         checkInitialState()
     }
@@ -37,6 +39,7 @@ class LoginViewModel @Inject constructor(
 
             val sessionActive = checkSessionUseCase()
             if (sessionActive) {
+                isAuthenticated = true
                 _uiState.value = LoginUiState.LoggedIn
                 return@launch
             }
@@ -57,10 +60,12 @@ class LoginViewModel @Inject constructor(
             val success = loginUseCase(username, password)
 
             if (!success) {
+                isAuthenticated = false
                 _uiState.value = LoginUiState.Error("Usuário ou senha inválidos")
                 return@launch
             }
 
+            isAuthenticated = true
             val biometricEnabled = isBiometricEnabledUseCase()
             val canAuthenticate = biometricManager.canAuthenticate()
 
@@ -99,7 +104,7 @@ class LoginViewModel @Inject constructor(
     }
 
     fun onBiometricError(message: String) {
-        _uiState.value = LoginUiState.BiometricError(message)
+        _uiState.value = LoginUiState.BiometricError(message, isAuthenticated)
     }
 
     fun onBiometricLogWithout() {

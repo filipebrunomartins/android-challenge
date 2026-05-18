@@ -148,18 +148,27 @@ fun LoginScreen(
             }
 
             is LoginUiState.BiometricError -> {
+                val errorState = uiState as LoginUiState.BiometricError
                 AlertDialog(
-                    onDismissRequest = { viewModel.clearError() },
+                    onDismissRequest = {
+                        if (errorState.canResumeWithoutBiometric) {
+                            viewModel.askBiometricNotNow()
+                        } else {
+                            viewModel.clearError()
+                        }
+                    },
                     title = { Text("Erro na biometria") },
-                    text = { Text((uiState as LoginUiState.BiometricError).message) },
+                    text = { Text(errorState.message) },
                     confirmButton = {
                         TextButton(onClick = { viewModel.askBiometricConfirm() }) {
                             Text("Tentar novamente")
                         }
                     },
                     dismissButton = {
-                        TextButton(onClick = { viewModel.onBiometricLogWithout() }) {
-                            Text("Logar sem biometria")
+                        if (errorState.canResumeWithoutBiometric) {
+                            TextButton(onClick = { viewModel.onBiometricLogWithout() }) {
+                                Text("Logar sem biometria")
+                            }
                         }
                     }
                 )
