@@ -15,7 +15,10 @@ import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.material3.CircularProgressIndicator
+import com.challenge.movieflux.core.designsystem.component.MovieFluxButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -51,6 +54,7 @@ internal fun HomeRoute(
         onMovieClick = onMovieClick,
         onToggleFavorite = viewModel::toggleFavorite,
         onLoadMore = viewModel::loadMore,
+        onRetry = viewModel::retry,
         modifier = modifier
     )
 }
@@ -63,6 +67,7 @@ internal fun HomeScreen(
     onMovieClick: (Int) -> Unit,
     onToggleFavorite: (Movie) -> Unit,
     onLoadMore: () -> Unit,
+    onRetry: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier.fillMaxSize()) {
@@ -86,17 +91,28 @@ internal fun HomeScreen(
                     onMovieClick = onMovieClick,
                     onToggleFavorite = onToggleFavorite,
                     onLoadMore = onLoadMore,
-                    canLoadMore = uiState.canLoadMore
+                    canLoadMore = uiState.canLoadMore,
+                    isPaginationError = uiState.isPaginationError,
+                    onRetry = onRetry
                 )
             }
             is HomeUiState.Error -> {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text(
-                        text = uiState.message,
-                        color = MovieFluxTheme.colorScheme.error,
-                        modifier = Modifier.padding(16.dp),
-                        textAlign = TextAlign.Center
-                    )
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = uiState.message,
+                            color = MovieFluxTheme.colorScheme.error,
+                            modifier = Modifier.padding(16.dp),
+                            textAlign = TextAlign.Center
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        MovieFluxButton(onClick = onRetry) {
+                            Text("Tentar novamente")
+                        }
+                    }
                 }
             }
             HomeUiState.Empty -> {
@@ -134,7 +150,9 @@ fun MovieGrid(
     onMovieClick: (Int) -> Unit,
     onToggleFavorite: (Movie) -> Unit,
     onLoadMore: () -> Unit,
-    canLoadMore: Boolean
+    canLoadMore: Boolean,
+    isPaginationError: Boolean,
+    onRetry: () -> Unit
 ) {
     val listState = rememberLazyGridState()
 
@@ -143,7 +161,7 @@ fun MovieGrid(
             val totalItemsCount = listState.layoutInfo.totalItemsCount
             val lastVisibleItemIndex = listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
             
-            canLoadMore && totalItemsCount > 0 && lastVisibleItemIndex >= totalItemsCount - 4
+            canLoadMore && !isPaginationError && totalItemsCount > 0 && lastVisibleItemIndex >= totalItemsCount - 4
         }
     }
 
@@ -171,7 +189,7 @@ fun MovieGrid(
             )
         }
         
-        if (canLoadMore) {
+        if (canLoadMore || isPaginationError) {
             item(span = { GridItemSpan(maxLineSpan) }) {
                 Box(
                     modifier = Modifier
@@ -179,7 +197,13 @@ fun MovieGrid(
                         .padding(16.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    CircularProgressIndicator()
+                    if (isPaginationError) {
+                        MovieFluxButton(onClick = onRetry) {
+                            Text("Tentar novamente")
+                        }
+                    } else {
+                        CircularProgressIndicator()
+                    }
                 }
             }
         }

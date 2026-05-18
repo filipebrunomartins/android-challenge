@@ -3,6 +3,7 @@ package com.challenge.movieflux.feature.home
 import android.content.Context
 import android.content.Intent
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -30,9 +31,11 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import coil.compose.AsyncImage
+import com.challenge.movieflux.core.designsystem.component.MovieFluxButton
 import com.challenge.movieflux.core.designsystem.icon.MovieFluxIcons
 import com.challenge.movieflux.core.designsystem.theme.MovieFluxTheme
 import com.challenge.movieflux.core.model.data.MovieDetailResponse
@@ -53,6 +56,7 @@ internal fun MovieDetailRoute(
         onShareClick = { movie ->
             shareMovie(context, movie)
         },
+        onRetry = viewModel::retry,
         modifier = modifier
     )
 }
@@ -63,6 +67,7 @@ internal fun MovieDetailScreen(
     onBackClick: () -> Unit,
     onFavoriteClick: () -> Unit,
     onShareClick: (MovieDetailResponse) -> Unit,
+    onRetry: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Box(modifier = modifier.fillMaxSize()) {
@@ -80,11 +85,23 @@ internal fun MovieDetailScreen(
                 )
             }
             is MovieDetailUiState.Error -> {
-                Text(
-                    text = uiState.message,
-                    modifier = Modifier.align(Alignment.Center),
-                    color = MovieFluxTheme.colorScheme.error
-                )
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = uiState.message,
+                        color = MovieFluxTheme.colorScheme.error,
+                        textAlign = TextAlign.Center
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    MovieFluxButton(onClick = onRetry) {
+                        Text("Tentar novamente")
+                    }
+                }
             }
         }
     }

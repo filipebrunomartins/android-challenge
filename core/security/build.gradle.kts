@@ -7,6 +7,10 @@ plugins {
 
 android {
     namespace = "com.challenge.movieflux.core.security"
+
+    testOptions {
+        unitTests.isIncludeAndroidResources = true
+    }
 }
 
 dependencies {
@@ -14,4 +18,10 @@ dependencies {
     implementation(libs.androidx.biometric.compose)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.security.crypto)
+
+    testImplementation(libs.mockk)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.junit)
+    testImplementation(libs.robolectric)
+    testImplementation(libs.androidx.test.core)
 }

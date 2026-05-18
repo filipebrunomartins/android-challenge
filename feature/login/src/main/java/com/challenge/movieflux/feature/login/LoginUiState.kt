@@ -15,4 +15,6 @@ sealed interface LoginUiState {
     data object LoggedIn : LoginUiState
 
     data class Error(val message: String) : LoginUiState
+
+    data class BiometricError(val message: String) : LoginUiState
 }

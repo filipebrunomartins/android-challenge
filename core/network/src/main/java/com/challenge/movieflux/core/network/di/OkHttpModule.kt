@@ -37,8 +37,15 @@ object OkHttpModule {
             .addInterceptor(loggerInterceptor)
             .addInterceptor { chain ->
 
-                val request = chain.request()
-                    .newBuilder()
+                val original = chain.request()
+                val originalHttpUrl = original.url
+
+                val url = originalHttpUrl.newBuilder()
+                    .setQueryParameter("language", "pt-BR")
+                    .build()
+
+                val request = original.newBuilder()
+                    .url(url)
                     .addHeader("Accept", "application/json")
                     .addHeader(
                         "Authorization",

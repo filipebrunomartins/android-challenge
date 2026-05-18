@@ -109,4 +109,8 @@ class MovieDetailViewModel @Inject constructor(
             }
         }
     }
+
+    fun retry() {
+        fetchMovieDetail()
+    }
 }

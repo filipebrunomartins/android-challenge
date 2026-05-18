@@ -29,7 +29,7 @@ class NetworkBoundResource @Inject constructor(
                 if (response.isSuccessful){
                     response.body()?.let {
                         emit(BaseResult.Success(data = it))
-                    }?: emit(BaseResult.Error(message = "Unknown error occurred", code = 0))
+                    }?: emit(BaseResult.Error(message = "Ocorreu um erro desconhecido", code = 0))
                 }else{
                     emit(BaseResult.Error(message = parserErrorBody(response.errorBody()), code = response.code()))
                 }
@@ -43,23 +43,23 @@ class NetworkBoundResource @Inject constructor(
     private fun parserErrorBody(response: ResponseBody?):String{
         return response?.let {
             val errorMessage = JsonParser.parseString(it.string()).asJsonObject["message"].asString
-            errorMessage.ifEmpty { "Whoops! Something went wrong. Please try again." }
+            errorMessage.ifEmpty { "Ops! Algo deu errado. Por favor, tente novamente." }
             errorMessage
-        }?:"Whoops! Unknown error occurred. Please try again"
+        }?:"Ops! Ocorreu um erro desconhecido. Tente novamente."
     }
     private fun message(throwable: Throwable?):String{
         when (throwable) {
-            is SocketTimeoutException -> return "Whoops! Connection time out. Please try again"
-            is IOException -> return "Whoops! No Internet Connection. Please try again"
+            is SocketTimeoutException -> return "Ops! Tempo limite de conexão excedido. Tente novamente."
+            is IOException -> return "Ops! Sem conexão com a internet. Tente novamente."
             is HttpException -> return try {
                 val errorJsonString = throwable.response()?.errorBody()?.string()
                 val errorMessage = JsonParser.parseString(errorJsonString).asJsonObject["message"].asString
-                errorMessage.ifEmpty { "Whoops! Something went wrong. Please try again." }
+                errorMessage.ifEmpty { "Ops! Algo deu errado. Por favor, tente novamente." }
             }catch (e:Exception){
-                "Whoops! Unknown error occurred. Please try again"
+                "Ops! Ocorreu um erro desconhecido. Tente novamente."
             }
         }
-        return "Whoops! Unknown error occurred. Please try again"
+        return "Ops! Ocorreu um erro desconhecido. Tente novamente."
     }
     private fun code(throwable: Throwable?):Int{
         return if (throwable is HttpException) (throwable).code()

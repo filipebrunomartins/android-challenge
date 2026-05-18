@@ -32,7 +32,8 @@ sealed interface HomeUiState {
     data class Success(
         val movies: List<Movie>,
         val isSearching: Boolean = false,
-        val canLoadMore: Boolean = true
+        val canLoadMore: Boolean = true,
+        val isPaginationError: Boolean = false
     ) : HomeUiState
 
     data class Error(val message: String) : HomeUiState
@@ -54,16 +55,17 @@ class HomeViewModel @Inject constructor(
     private val _isLoading = MutableStateFlow(false)
     private val _error = MutableStateFlow<String?>(null)
     private val _canLoadMore = MutableStateFlow(true)
+    private val _isPaginationError = MutableStateFlow(false)
 
     val uiState: StateFlow<HomeUiState> = combine(
         _movies,
         getFavoriteMovieIdsUseCase(),
         _searchQuery,
-        combine(_isLoading, _error, _canLoadMore) { isLoading, error, canLoadMore ->
-            Triple(isLoading, error, canLoadMore)
+        combine(_isLoading, _error, _canLoadMore, _isPaginationError) { isLoading, error, canLoadMore, isPaginationError ->
+            NetworkState(isLoading, error, canLoadMore, isPaginationError)
         }
     ) { movies, favoriteIds, query, networkState ->
-        val (isLoading, error, canLoadMore) = networkState
+        val (isLoading, error, canLoadMore, isPaginationError) = networkState
         val updatedMovies = movies.map { movie ->
             movie.copy(isFavorite = favoriteIds.contains(movie.id))
         }
@@ -75,7 +77,8 @@ class HomeViewModel @Inject constructor(
             else -> HomeUiState.Success(
                 movies = updatedMovies,
                 isSearching = query.isNotEmpty(),
-                canLoadMore = canLoadMore
+                canLoadMore = canLoadMore,
+                isPaginationError = isPaginationError
             )
         }
     }.stateIn(
@@ -154,6 +157,7 @@ class HomeViewModel @Inject constructor(
                 isFetching = false
                 _isLoading.value = false
                 _error.value = null
+                _isPaginationError.value = false
                 val newMovies = response.data.results
                 allMovies.addAll(newMovies)
                 _movies.value = allMovies.toList()
@@ -171,14 +175,24 @@ class HomeViewModel @Inject constructor(
                 if (allMovies.isEmpty()) {
                     _error.value = response.message
                 } else {
-                    _canLoadMore.value = false
+                    _isPaginationError.value = true
                 }
             }
         }
     }
 
+    fun retry() {
+        if (_error.value != null) {
+            _error.value = null
+            fetchMovies(_searchQuery.value)
+        } else if (_isPaginationError.value) {
+            _isPaginationError.value = false
+            fetchMovies(_searchQuery.value)
+        }
+    }
+
     fun loadMore() {
-        if (isFetching) return
+        if (isFetching || _isPaginationError.value) return
         
         if (_canLoadMore.value) {
              fetchMovies(_searchQuery.value)
@@ -191,3 +205,10 @@ class HomeViewModel @Inject constructor(
         }
     }
 }
+
+private data class NetworkState(
+    val isLoading: Boolean,
+    val error: String?,
+    val canLoadMore: Boolean,
+    val isPaginationError: Boolean
+)

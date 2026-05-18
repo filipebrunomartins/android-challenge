@@ -140,8 +140,28 @@ fun LoginScreen(
                 MovieFluxBiometricPrompt(
                     triggerAuthentication = true,
                     onSuccess = { viewModel.onBiometricSuccess() },
-                    onError = { viewModel.onBiometricFailed() },
-                    onFailed = { } //Todo
+                    onError = { message -> viewModel.onBiometricError(message) },
+                    onFailed = {
+                        Toast.makeText(context, "Digital não reconhecida", Toast.LENGTH_SHORT).show()
+                    }
+                )
+            }
+
+            is LoginUiState.BiometricError -> {
+                AlertDialog(
+                    onDismissRequest = { viewModel.clearError() },
+                    title = { Text("Erro na biometria") },
+                    text = { Text((uiState as LoginUiState.BiometricError).message) },
+                    confirmButton = {
+                        TextButton(onClick = { viewModel.askBiometricConfirm() }) {
+                            Text("Tentar novamente")
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { viewModel.onBiometricLogWithout() }) {
+                            Text("Logar sem biometria")
+                        }
+                    }
                 )
             }
             else -> {}

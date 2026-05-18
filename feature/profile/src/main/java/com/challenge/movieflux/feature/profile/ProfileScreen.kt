@@ -25,21 +25,20 @@ internal fun ProfileScreen(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text("PROFILE")
-            Text("Nome: tentar pegar do session")
+            Text("Perfil")
             MovieFluxButton(
                 onClick = {
                     viewModel.logout()
                     onLogout()
                 },
-                text = { Text("Logout") }
+                text = { Text("Logout(Limpar tudo)") }
             )
             MovieFluxButton(
                 onClick = {
                     viewModel.clearSession()
                     onLogout()
                 },
-                text = { Text("Limpar sessão") }
+                text = { Text("Logout(Manter Biometria)") }
             )
         }
     }

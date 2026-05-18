@@ -15,5 +15,12 @@ dependencies {
     implementation(libs.coil.kt.compose)
 
     androidTestImplementation(libs.bundles.androidx.compose.ui.test)
+    androidTestImplementation(libs.hilt.android.testing)
+    debugImplementation(libs.androidx.compose.ui.testManifest)
     implementation(libs.androidx.navigation.compose)
+
+    testImplementation(libs.mockk)
+    testImplementation(libs.turbine)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.junit)
 }

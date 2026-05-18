@@ -21,6 +21,8 @@ dependencies {
 
     implementation(libs.retrofit.gson)
 
+    testImplementation(libs.mockk)
+    testImplementation(libs.turbine)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.kotlinx.serialization.json)
 }

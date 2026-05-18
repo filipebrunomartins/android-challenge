@@ -16,7 +16,7 @@ android {
 
         // Todo
         // Custom test runner to set up Hilt dependency graph
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "com.challenge.movieflux.testing.MovieFluxTestRunner"
     }
 
 
@@ -65,18 +65,17 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
 
     ksp(libs.hilt.compiler)
+    kspAndroidTest(libs.hilt.compiler)
 
     debugImplementation(libs.androidx.compose.ui.testManifest)
-
-    kspTest(libs.hilt.compiler)
 
     testImplementation(libs.hilt.android.testing)
     testImplementation(libs.kotlin.test)
 
-
+    androidTestImplementation(libs.androidx.test.ext)
+    androidTestImplementation(libs.androidx.test.runner)
     androidTestImplementation(libs.androidx.test.espresso.core)
     androidTestImplementation(libs.androidx.compose.ui.test)
     androidTestImplementation(libs.hilt.android.testing)
     androidTestImplementation(libs.kotlin.test)
-
 }

@@ -14,5 +14,11 @@ dependencies {
     implementation(projects.core.security)
 
     androidTestImplementation(libs.bundles.androidx.compose.ui.test)
+    androidTestImplementation(libs.hilt.android.testing)
     implementation(libs.androidx.navigation.compose)
+
+    testImplementation(libs.mockk)
+    testImplementation(libs.turbine)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.junit)
 }

@@ -7,6 +7,7 @@ import com.challenge.movieflux.core.domain.login.usecase.EnableBiometricUseCase
 import com.challenge.movieflux.core.domain.login.usecase.IsBiometricEnabledUseCase
 import com.challenge.movieflux.core.domain.login.usecase.LoginUseCase
 import com.challenge.movieflux.core.domain.login.usecase.SetLoggedInUseCase
+import com.challenge.movieflux.core.security.BiometricMovieFluxManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -19,7 +20,8 @@ class LoginViewModel @Inject constructor(
     private val checkSessionUseCase: CheckSessionUseCase,
     private val isBiometricEnabledUseCase: IsBiometricEnabledUseCase,
     private val enableBiometricUseCase: EnableBiometricUseCase,
-    private val setLoggedInUseCase: SetLoggedInUseCase
+    private val setLoggedInUseCase: SetLoggedInUseCase,
+    private val biometricManager: BiometricMovieFluxManager
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<LoginUiState>(LoginUiState.Initial)
@@ -60,11 +62,14 @@ class LoginViewModel @Inject constructor(
             }
 
             val biometricEnabled = isBiometricEnabledUseCase()
+            val canAuthenticate = biometricManager.canAuthenticate()
 
             _uiState.value = if (biometricEnabled) {
                 LoginUiState.LoggedIn
-            } else {
+            } else if (canAuthenticate) {
                 LoginUiState.AskToEnableBiometric
+            } else {
+                LoginUiState.LoggedIn
             }
         }
     }
@@ -93,8 +98,15 @@ class LoginViewModel @Inject constructor(
         enableBiometric()
     }
 
-    fun onBiometricFailed() {
-        _uiState.value = LoginUiState.Error("Falha na biometria")
+    fun onBiometricError(message: String) {
+        _uiState.value = LoginUiState.BiometricError(message)
+    }
+
+    fun onBiometricLogWithout() {
+        viewModelScope.launch {
+            setLoggedInUseCase(true)
+            _uiState.value = LoginUiState.LoggedIn
+        }
     }
 
     fun clearError() {

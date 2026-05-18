@@ -1,5 +1,6 @@
 package com.challenge.movieflux.core.security
 
+import android.util.Log
 import androidx.biometric.AuthenticationRequest
 import androidx.biometric.AuthenticationResult
 import androidx.biometric.AuthenticationResultCallback

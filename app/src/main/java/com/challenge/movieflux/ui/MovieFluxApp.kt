@@ -106,6 +106,6 @@ enum class TopLevelDestination(
     val label: String
 ) {
     HOME(MovieFluxRoutes.HOME, MovieFluxIcons.Home, "Home"),
-    FAVORITES(MovieFluxRoutes.FAVORITES, MovieFluxIcons.Favorite, "Favorites"),
-    PROFILE(MovieFluxRoutes.PROFILE, MovieFluxIcons.Person, "Profile")
+    FAVORITES(MovieFluxRoutes.FAVORITES, MovieFluxIcons.Favorite, "Favoritos"),
+    PROFILE(MovieFluxRoutes.PROFILE, MovieFluxIcons.Person, "Perfil")
 }
