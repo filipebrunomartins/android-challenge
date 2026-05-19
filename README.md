@@ -12,13 +12,47 @@ https://www.themoviedb.org/settings/api
 
 # 🧪 Como Testar o Fluxo de Biometria
 
-Para validar o fluxo de segurança, siga estes passos:
+Para validar o fluxo completo de autenticação biométrica do MovieFlux, siga os passos abaixo:
 
-1. **Primeiro Acesso:** Faça login com o usuário `admin` e senha `1234`.
-2. **Ativação:** O app detectará suporte à biometria e perguntará se deseja ativar. Clique em **Ativar** e valide sua digital.
-3. **Persistência:** Feche o aplicativo (encerre o processo).
-4. **Segundo Acesso:** Ao abrir o app novamente, você verá o diálogo de **Login Rápido**. Clique em **Validar**.
-5. **Autenticação:** O prompt do sistema aparecerá. Após o sucesso, você será levado diretamente à Home sem digitar a senha.
+1. **Primeiro Acesso**  
+   Faça login utilizando:
+   
+   - Usuário: `admin` ou `user`
+   - Senha: `1234`
+
+2. **Ativação da Biometria**  
+   Após o login, o aplicativo detectará automaticamente se o dispositivo possui suporte à biometria.
+
+   Caso disponível, será exibida uma solicitação para ativar autenticação biométrica.  
+   Clique em **Ativar** e valide sua digital ou reconhecimento facial.
+
+3. **Sessão Persistente**  
+   Após autenticar, o aplicativo mantém a sessão do usuário ativa.  
+   Ao fechar e reabrir o app, você continuará logado automaticamente.
+
+4. **Testando o Login Rápido**  
+   Para testar novamente o fluxo biométrico, acesse a tela de **Perfil** e utilize uma das opções disponíveis:
+
+   - **Logout (Limpar Tudo)**  
+     Remove completamente os dados locais e desativa a biometria, retornando para a tela de login limpa.
+
+   - **Logout (Manter Biometria)**  
+     Encerra apenas a sessão atual, mantendo a biometria configurada para o próximo acesso.
+
+5. **Segundo Acesso com Biometria**  
+   Após utilizar a opção **Logout (Manter Biometria)**, abra o aplicativo novamente.
+
+   Você verá o diálogo de **Login Rápido**.  
+   Clique em **Validar** para iniciar a autenticação biométrica.
+
+6. **Autenticação Biométrica**  
+   O prompt nativo do Android será exibido.
+
+   Após a validação com sucesso:
+   
+   - O login será realizado automaticamente
+   - O usuário será redirecionado diretamente para a Home
+   - Não será necessário informar usuário e senha novamente
 
 > **Dica para Emulador:** Caso use o emulador, certifique-se de configurar uma impressão digital nas configurações do Android (`Settings -> Security -> Fingerprint`) antes de testar no app.
 
