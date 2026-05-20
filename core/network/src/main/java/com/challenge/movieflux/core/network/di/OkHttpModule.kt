@@ -47,6 +47,7 @@ object OkHttpModule {
                 val request = original.newBuilder()
                     .url(url)
                     .addHeader("Accept", "application/json")
+                    .addHeader("Accept-Encoding", "identity")
                     .addHeader(
                         "Authorization",
                         "Bearer ${BuildConfig.TMDB_TOKEN}"
